@@ -4,6 +4,8 @@ Generate Sequelize definition statements and compatible TypeScript definitions f
 
 # Development Notes
 
+Develpment Branch
+
 * *Composite Primary and Foreign Keys*
 
     Composite Primary and Foreign Keys are currently NOT supported in Sequelize. Hence as a result, are
