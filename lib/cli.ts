@@ -90,7 +90,7 @@ function processFromPrompt() {
             password : {description : "Password", required : false, hidden : true},
             targetDirectory : {description : "Target directory", required : true},
             dialect : {description : "Database dialect ( mysql, postgres, mariadb, mssql, sqlite)", required : true},
-            storage : {description : "Storage file (sqlite only)", required : true}
+            storage : {description : "Storage file (sqlite only)", required : false}
         }
     };
 
@@ -110,7 +110,7 @@ function generate(options : generator.GenerateOptions) : void {
     console.log("Username: " + options.username);
     console.log("Password: <hidden>");
     console.log("Target  : " + options.targetDirectory);
-    console.log("Database Dialect: " + options.options.dialect);    
+    console.log("Database Dialect: " + options.options.dialect);
     console.log("Storage : " + options.options.storage);
     console.log("");
 

@@ -66,7 +66,8 @@ Current supported database dialects:
 
 * MySQL - `mysql`
 * PostGresql - `postgres`
-* SQlite - `sqlite`
+* SQlite - `sqlite3`
+* MSSQL - `tedious`
 
 run the following command:
 
@@ -148,15 +149,15 @@ CREATE TABLE Users (
 Sqlite
 
 ```SQL
-CREATE TABLE `Roles` (
-	`RoleID`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`RoleName`	TEXT NOT NULL
+CREATE TABLE Roles (
+	RoleID	INTEGER PRIMARY KEY AUTOINCREMENT,
+	RoleName	TEXT NOT NULL
 );
 
-CREATE TABLE `Users` (
-	`UserID`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`RoleID`	INTEGER NOT NULL,
-	`UserName`	TEXT NOT NULL,
+CREATE TABLE Users (
+	UserID	INTEGER PRIMARY KEY AUTOINCREMENT,
+	RoleID	INTEGER NOT NULL,
+	UserName	TEXT NOT NULL,
 
 	FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
 );
