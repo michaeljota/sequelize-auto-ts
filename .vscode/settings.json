@@ -5,6 +5,8 @@
         "lib/*.js.map": true,
         "lib/*.js": true,
         "examples/**/*.js.map": true,
-        "examples/**/*.js": true
+        "examples/**/*.js": true,
+        "test/**/*.js.map": true,
+        "test/**/*.js": true
     }
 }

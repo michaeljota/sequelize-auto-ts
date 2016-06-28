@@ -3,3 +3,4 @@
 *.js.map
 *.db
 config.local.*
+database.sqlite

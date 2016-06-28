@@ -1,6 +1,5 @@
 ///<reference path="../typings/index.d.ts"/>
 
-var fs = require('fs');
 import * as moment from "moment";
 import {assert} from "chai";
 import {UsersInstance, UsersPojo} from "../examples/sqlite/sequelize-types";
@@ -9,9 +8,7 @@ import models = require('../examples/sqlite/sequelize-models');
 let packageJson = require('../package.json');
 
 var config = require('./config');
-if (fs.existsSync('./config.local.js')) {
-    config = require('./config.local');
-}
+try { config = require('./config.local'); } catch(ex) {}
 
 declare var describe : any;
 if (config.runTestOn.indexOf("sqlite") === -1) {
