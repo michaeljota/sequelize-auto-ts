@@ -37,7 +37,7 @@ export class Schema {
     public static fieldTypeTranslations : util.Dictionary<string> = {
 
         tinyint : "boolean",
-        
+
         boolean : "boolean",
 
         smallint : "number",
@@ -84,9 +84,9 @@ export class Schema {
     public static fieldTypeSequelize : util.Dictionary<string> = {
 
         tinyint : 'Sequelize.BOOLEAN',
-        
+
         boolean : 'Sequelize.BOOLEAN',
-        
+
         smallint : 'Sequelize.INTEGER',
         int : 'Sequelize.INTEGER',
         integer : 'Sequelize.INTEGER',
@@ -212,8 +212,8 @@ export class Table {
         return Sequelize.Utils.singularize(this.tableName);
     }
 
-    public tableNameSingularCamel() : string {
-        return toCamelCase(this.tableNameSingular());
+    public tableNameSingularCamel(): string {
+        return ChangeCase.snake(this.tableNameSingular());
     }
 
     public tableNamePascal() : string {
@@ -222,6 +222,10 @@ export class Table {
 
     public tableNameCamel() : string {
         return ChangeCase.camel(this.tableName);
+    }
+
+    public tableNameModelSnake() : string {
+        return this.tableNameModel().replace(/\s/g,"_");
     }
 
     public tableNameModel() : string {
@@ -515,17 +519,17 @@ export function read(database : string, username : string, password : string, op
         default:
             break;
     }
-    
+
     if(options.dialect == 'sqlite') {
         sql =
             "select name " +
             "from sqlite_master " +
             "where type='table' and name != 'sqlite_sequence' " +
-            "order by name";  
+            "order by name";
         sequelize
             .query(sql)
             .then((rows)=>processTablesSQLite(undefined, rows))
-            .catch((err)=>processTablesSQLite(err, null));            
+            .catch((err)=>processTablesSQLite(err, null));
     } else {
         sequelize
             .query(sql)
@@ -538,16 +542,16 @@ export function read(database : string, username : string, password : string, op
             callback(err, null);
             return;
         }
-        
+
         if (tables == null) {
             var err : Error = new Error("No schema info returned for database.");
             callback(err, null);
             return;
         }
-        
+
         var rows = <Array<ColumnDefinitionRow>> new Array<any>();
         var index : number = 0;
-        
+
         (function iterate() {
             var table : any = tables[index];
             var sql = 'PRAGMA table_info(' + table + ')';
@@ -570,14 +574,14 @@ export function read(database : string, username : string, password : string, op
                         row.ordinal_position = column.cid;
                         rows.push(row);
                     }
-                    
+
                     if(index < tables.length) {
                         iterate();
-                    } else {   
+                    } else {
                         readCustomFields(rows);
                     }
-                });            
-        })();      
+                });
+        })();
     }
 
     function processTablesAndColumns(err : Error, rows : Array<ColumnDefinitionRow>) : void {
@@ -686,7 +690,7 @@ export function read(database : string, username : string, password : string, op
 
         readReferences();
     }
-    
+
     function readReferences() : void {
 
         var sql : string =
@@ -724,34 +728,34 @@ export function read(database : string, username : string, password : string, op
                 "select name " +
                 "from sqlite_master " +
                 "where type='table' and name != 'sqlite_sequence' " +
-                "order by name";     
+                "order by name";
             sequelize
                 .query(sql)
                 .then((rows)=>readReferencesSQLite(undefined, rows))
-                .catch((err)=>readReferencesSQLite(err, null)); 
+                .catch((err)=>readReferencesSQLite(err, null));
         } else {
             sequelize
                 .query(sql)
                 .then((rows)=>processReferences(undefined, rows[0]))
                 .catch((err)=>processReferences(err, null));
-        }            
+        }
     }
-    
+
     function readReferencesSQLite(err : Error, tables : Array<string>) : void {
         if (err) {
             callback(err, null);
             return;
         }
-        
+
         var index : number = 0;
         var rows = <Array<ReferenceDefinitionRow>> new Array<any>();
-        
+
         (function iterate() {
             var table : any = tables[index];
             var sql = 'PRAGMA foreign_key_list(' + table + ')';
             sequelize
                 .query(sql)
-                .then((pragma)=>{                    
+                .then((pragma)=>{
                     index++;
                     if(pragma.length > 0) {
                         var row = <ReferenceDefinitionRow>{};
@@ -763,11 +767,11 @@ export function read(database : string, username : string, password : string, op
                     }
                     if(index < tables.length) {
                         iterate();
-                    } else {   
+                    } else {
                         processReferences(undefined, rows);
                     }
-                });            
-        })();   
+                });
+        })();
     }
 
     function processReferences(err : Error, rows : Array<ReferenceDefinitionRow>) : void {
@@ -792,7 +796,7 @@ export function read(database : string, username : string, password : string, op
         switch (options.dialect) {
             case 'postgres' :
                 callback(null, schema);
-                break;   
+                break;
             case 'mariadb' :
             case 'mysql' :
             default:
@@ -861,18 +865,20 @@ export function read(database : string, username : string, password : string, op
             //     true));
             // }
 
-            // create singular parent reference from child
-            childTable.fields.push(new Field(
-                util.camelCase(Sequelize.Utils.singularize(
-                    associationName === undefined
-                        ? row.referenced_table_name                             // Accounts -> account
-                        : associationName)),                                    // ownerUserId -> OwnerUsers -> ownerUser
-                ChangeCase[naming.defaults.caseType](ChangeCase.snake(row.referenced_table_name) + '_pojo'),    // Accounts -> AccountPojo
-                undefined,
-                undefined,
-                undefined,
-                childTable,
-                true));
+            // create singular parent reference from child if it's not reflexive
+            if(row.table_name != row.referenced_table_name ) {
+                childTable.fields.push(new Field(
+                    util.camelCase(Sequelize.Utils.singularize(
+                        (associationName === undefined || associationName === "")
+                            ? row.referenced_table_name                             // Accounts -> account
+                            : associationName)),                                    // ownerUserId -> OwnerUsers -> ownerUser
+                    ChangeCase[naming.defaults.caseType](ChangeCase.snake(row.referenced_table_name) + '_pojo'),    // Accounts -> AccountPojo
+                    undefined,
+                    undefined,
+                    undefined,
+                    childTable,
+                        true));
+            }
 
             // tell Sequelize about the reference
             schema.references.push(new Reference(
@@ -901,7 +907,7 @@ export function read(database : string, username : string, password : string, op
             }
         }
 
-        function processReferenceXrefs() : void {
+        function processReferenceXrefs(): void {
             for (var xrefName in xrefs) {
 
                 if (!xrefs.hasOwnProperty(xrefName)) {
