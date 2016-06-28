@@ -524,7 +524,7 @@ export function read(database : string, username : string, password : string, op
         sql =
             "select name " +
             "from sqlite_master " +
-            "where type='table' and name != 'sqlite_sequence' " +
+            "where name != 'sqlite_sequence' " +
             "order by name";
         sequelize
             .query(sql)
@@ -554,7 +554,7 @@ export function read(database : string, username : string, password : string, op
 
         (function iterate() {
             var table : any = tables[index];
-            var sql = 'PRAGMA table_info(' + table + ')';
+            var sql = "PRAGMA table_info('" + table + "')";
             sequelize
                 .query(sql)
                 .then((pragma)=>{
@@ -727,7 +727,7 @@ export function read(database : string, username : string, password : string, op
             sql =
                 "select name " +
                 "from sqlite_master " +
-                "where type='table' and name != 'sqlite_sequence' " +
+                "where name != 'sqlite_sequence' " +
                 "order by name";
             sequelize
                 .query(sql)
@@ -752,7 +752,7 @@ export function read(database : string, username : string, password : string, op
 
         (function iterate() {
             var table : any = tables[index];
-            var sql = 'PRAGMA foreign_key_list(' + table + ')';
+            var sql = "PRAGMA foreign_key_list('" + table + "')";
             sequelize
                 .query(sql)
                 .then((pragma)=>{
