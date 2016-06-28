@@ -14,7 +14,8 @@ module.exports = {
       return parseInt(String(Math.random() * 999), 10);
   },
 
-  runTestOn: ['mysql','sqlite','postgres','mssql'],
+  //runTestOn: ['mysql','sqlite','postgres','mssql'],
+  runTestOn: ['sqlite'],
 
   //make maxIdleTime small so that tests exit promptly
   mysql: {
