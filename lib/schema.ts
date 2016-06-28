@@ -51,7 +51,8 @@ export class Schema {
         decimal : "number",
         "double precision" : "number",
         real : "number",
-        numeric : "number",
+        numeric: "number",
+        money : "number",
 
         timestamp : "Date",
         date : "Date",
@@ -60,19 +61,23 @@ export class Schema {
         tinyblob : "Buffer",
         mediumblob : "Buffer",
         longblob : "Buffer",
-        blob : "Buffer",
+        blob: "Buffer",
+        image : "Buffer",
         binary : "Buffer",
         varbinary : "Buffer",
         bit : "Buffer",
         bytea : "Buffer",
 
-        char : "string",
+        char: "string",
+        nchar : "string",
         character : "string",
-        varchar : "string",
+        varchar: "string",
+        nvarchar : "string",
         tinytext : "string",
         mediumtext : "string",
         longtext : "string",
-        text : "string",
+        text: "string",
+        ntext: "string",
         "enum" : "string",
         "set" : "string",
         time : "string",
@@ -99,7 +104,8 @@ export class Schema {
         decimal : 'Sequelize.DECIMAL',
         "double precision" : 'Sequelize.DECIMAL',
         real : 'Sequelize.DECIMAL',
-        numeric : 'Sequelize.DECIMAL',
+        numeric: 'Sequelize.DECIMAL',
+        money : 'Sequelize.DECIMAL',
 
         timestamp : 'Sequelize.DATE',
         date : 'Sequelize.DATE',
@@ -108,18 +114,22 @@ export class Schema {
         tinyblob : 'Sequelize.BLOB',
         mediumblob : 'Sequelize.BLOB',
         longblob : 'Sequelize.BLOB',
-        blob : 'Sequelize.BLOB',
+        blob: 'Sequelize.BLOB',
+        image : 'Sequelize.BLOB',
         binary : 'Sequelize.BLOB',
         varbinary : 'Sequelize.BLOB',
         bit : 'Sequelize.BLOB',
         bytea : 'Sequelize.BLOB',
 
-        char : 'Sequelize.STRING',
-        varchar : 'Sequelize.STRING',
+        char: 'Sequelize.STRING',
+        nchar : 'Sequelize.STRING',
+        varchar: 'Sequelize.STRING',
+        nvarchar : 'Sequelize.STRING',
         tinytext : 'Sequelize.STRING',
         mediumtext : 'Sequelize.STRING',
         longtext : 'Sequelize.STRING',
-        text : 'Sequelize.STRING',
+        text: 'Sequelize.STRING',
+        ntext : 'Sequelize.STRING',
         "enum" : 'Sequelize.ENUM',
         "set" : 'Sequelize.STRING',
         time : 'Sequelize.STRING',
@@ -296,7 +306,7 @@ export class Field {
                 (   fieldType.substr(fieldTypeLength - 4, 4) !== 'Pojo' &&
                 fieldType.substr(fieldTypeLength - 6, 6) !== 'Pojo[]')
             ) {
-                console.log('Unable to translate field type:' + fieldType);
+                console.log('Unable to translate field type: ' + fieldType);
             }
 
             if (fieldType.substr(0, 6) === 'types.') {
@@ -516,6 +526,13 @@ export function read(database : string, username : string, password : string, op
                 "table_schema = 'public' " +
                 "order by table_name, ordinal_position";
             break;
+        case 'mssql':
+            sql =
+                "select table_name, column_name, data_type, ordinal_position " +
+                "from information_schema.columns " +
+                "where table_catalog = '" + database + "' "
+                "order by table_name, ordinal_position";
+            break;
         default:
             break;
     }
@@ -703,6 +720,7 @@ export function read(database : string, username : string, password : string, op
             case 'mariadb' :
             case 'mysql' :
                 break;
+            case 'mssql':
             case 'postgres' :
                 sql =
                     "SELECT " +

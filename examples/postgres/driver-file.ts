@@ -1,11 +1,15 @@
 import types = require('./sequelize-types');
 import models = require('./sequelize-models');
 
-models.initialize('test001', 'dbuser', 'password', {
+var config = require('../config.js');
+try { config = require('../config.local.js'); } catch (ex) { }
+
+models.initialize(config.postgres.database, config.postgres.username, config.postgres.password, {
     dialect : 'postgres',
     define : {
         timestamps : false
-    }
+    },
+    host : config.postgres.host
 });
 
 let findall = models.UsersModel.findAll();

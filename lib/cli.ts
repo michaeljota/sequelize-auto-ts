@@ -111,7 +111,10 @@ function generate(options : generator.GenerateOptions) : void {
     console.log("Password: <hidden>");
     console.log("Target  : " + options.targetDirectory);
     console.log("Database Dialect: " + options.options.dialect);
-    console.log("Storage : " + options.options.storage);
+    if(options.options.host !== undefined)
+        console.log("Host : " + options.options.host);
+    if(options.options.storage !== undefined)
+        console.log("Storage : " + options.options.storage);
     console.log("");
 
     if (!fs.existsSync(options.targetDirectory)) {

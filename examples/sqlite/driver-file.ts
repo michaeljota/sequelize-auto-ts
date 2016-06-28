@@ -1,12 +1,15 @@
 import types = require('./sequelize-types');
 import models = require('./sequelize-models');
 
-models.initialize('database', 'dbuser', 'password', {
+var config = require('../config.js');
+try { config = require('../config.local.js'); } catch (ex) { }
+
+models.initialize(config.sqlite.database, config.sqlite.username, config.sqlite.password, {
     dialect : 'sqlite',
     define : {
         timestamps : false
     },
-    storage : 'sqlite.db'
+    storage : config.sqlite.storage
 });
 
 let findall = models.UsersModel.findAll();

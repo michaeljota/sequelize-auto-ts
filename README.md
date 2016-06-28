@@ -65,9 +65,9 @@ Use node to execute `lib\cli.ts` and pass in four required parameters:
 Current supported database dialects:
 
 * MySQL - `mysql`
-* PostGresql - `postgres`
-* SQlite - `sqlite3`
-* MSSQL - `tedious`
+* PostgreSQL - `postgres`
+* SQLite - `sqlite3`
+* MS SQL - `tedious`
 
 run the following command:
 
@@ -128,7 +128,7 @@ CREATE TABLE Users (
 );
 ```
 
-PostGresql
+PostgreSQL
 
 ```SQL
 CREATE TABLE Roles (
@@ -145,7 +145,7 @@ CREATE TABLE Users (
 );
 ```
 
-Sqlite
+SQLite
 
 ```SQL
 CREATE TABLE Roles (
@@ -162,7 +162,7 @@ CREATE TABLE Users (
 );
 ```
 
-MSSQL
+MS SQL
 
 ```SQL
 CREATE TABLE Roles (
@@ -178,6 +178,29 @@ CREATE TABLE Users (
 	FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
 );
 ```
+
+You can create the example folder with the following commands:
+
+```Shell
+cd examples
+
+copy config.ts config.local.ts
+```
+Apply any modifications you need to the connection parameters such as hostname, port and credentials.
+
+```Shell
+npm run build && node examples\createexamples.js
+```
+
+Runt he tests, e.g.
+
+```Shell
+node examples\mysql\driver-file.js
+node examples\postgres\driver-file.js
+node examples\sqlite\driver-file.js
+node examples\mssql\driver-file.js
+```
+
 # Generated Interfaces
 
 For this simple database with just two tables, sequelize-auto-ts will generate eight interfaces in `sequelize-types.ts`.

@@ -14,14 +14,13 @@ module.exports = {
       return parseInt(String(Math.random() * 999), 10);
   },
 
-  //runOnDialects: ['mysql','sqlite','postgres','mssql'],
-  runOnDialects: ['sqlite'],
+  runOnDialects: ['mysql','sqlite','postgres','mssql'],
 
   //make maxIdleTime small so that tests exit promptly
   mysql: {
     username: "root",
     password: null,
-    database: 'sequelize_auto_test',
+    database: 'sequelize_auto_ts_example',
     host: '127.0.0.1',
     port: 3306,
     pool: { maxConnections: 5, maxIdleTime: 30}
@@ -31,20 +30,20 @@ module.exports = {
     username: "foo",
     password: null,
     host: '127.0.0.1',
-    database: path.join(__dirname, "database.sqlite"),
-    storage: path.join(__dirname, "database.sqlite")
+    database: path.join(__dirname, "sequelize_auto_ts_example.db"),
+    storage: path.join(__dirname, "sequelize_auto_ts_example.db")
   },
 
   postgres: {
-    database: 'sequelize_auto_test',
-    username: "postgres",
+    database: 'sequelize_auto_ts_example',
+    username: "root",
     port: 5432,
     pool: { maxConnections: 5, maxIdleTime: 30}
   },
 
   mssql: {
-    database: 'sequelize_auto_test',
-    username: "mssql",
+    database: 'sequelize_auto_ts_example',
+    username: "root",
     port: 1433,
     pool: { maxConnections: 5, maxIdleTime: 30}
   }

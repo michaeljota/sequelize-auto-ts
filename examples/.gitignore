@@ -1,1 +1,5 @@
 *.DS_Store
+*.js
+*.js.map
+*.db
+config.local.*

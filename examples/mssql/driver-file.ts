@@ -4,12 +4,12 @@ import models = require('./sequelize-models');
 var config = require('../config.js');
 try { config = require('../config.local.js'); } catch (ex) { }
 
-models.initialize(config.mysql.database, config.mysql.username, config.mysql.password, {
-    dialect : 'mysql',
+models.initialize(config.mssql.database, config.mssql.username, config.mssql.password, {
+    dialect : 'mssql',
     define : {
         timestamps : false
     },
-    host : config.mysql.host
+    host : config.mssql.host
 });
 
 let findall = models.UsersModel.findAll();
