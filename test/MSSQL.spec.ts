@@ -3,20 +3,19 @@
 import * as moment from "moment";
 import {assert} from "chai";
 var helpers = require('./helpers');
-import * as types from "../examples/postgres/sequelize-types";
-import models = require('../examples/postgres/sequelize-models');
+import * as types from "./gen/mssql/sequelize-types";
+import models = require('./gen/mssql/sequelize-models');
 let packageJson = require('../package.json');
 
 var config = require('./config');
 try { config = require('./config.local'); } catch (ex) { }
 
 declare var describe : any;
-if (config.runTestOn.indexOf("mssql") === -1) {
+if (config.runOnDialects.indexOf("mssql") === -1) {
     describe = (title, done) => {};
 }
 
-let users: types.UsersInstance[] = null;
-let roles : types.RolesInstance[] = null;
+let orders : types.OrdersInstance[] = null;
 
 describe('MS SQL Test Suit', function () {
     before(function (done) {
@@ -41,8 +40,21 @@ describe('MS SQL Test Suit', function () {
         models.SEQUELIZE.authenticate().then(function(err) {
             asyncDone.trigger();
         }, function (err) {
-            throw err;
+            asyncDone.trigger(err);
         });
+    });
+
+    it('should have orders', function (done) {
+        let asyncDone = new helpers.AsyncDone(done);
+        models.OrdersModel.findAll()
+            .catch((error: any) => {
+                asyncDone.trigger(error);
+            })
+            .done((result: any) => {
+                assert.isNotNull(result);
+                assert.notEqual(result.length, 0);
+                asyncDone.trigger();
+            });
     });
 
 });
