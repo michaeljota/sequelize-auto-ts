@@ -11,7 +11,7 @@ var config = require('./config');
 try { config = require('./config.local'); } catch (ex) { }
 
 declare var describe : any;
-if (config.runTestOn.indexOf("postgres") === -1) {
+if (config.runTestOn.indexOf("mssql") === -1) {
     describe = (title, done) => {};
 }
 

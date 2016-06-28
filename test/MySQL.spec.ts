@@ -3,15 +3,15 @@
 import * as moment from "moment";
 import {assert} from "chai";
 var helpers = require('./helpers');
-import * as types from "../examples/postgres/sequelize-types";
-import models = require('../examples/postgres/sequelize-models');
+import * as types from "../examples/mysql/sequelize-types";
+import models = require('../examples/mysql/sequelize-models');
 let packageJson = require('../package.json');
 
 var config = require('./config');
 try { config = require('./config.local'); } catch (ex) { }
 
 declare var describe : any;
-if (config.runTestOn.indexOf("postgres") === -1) {
+if (config.runTestOn.indexOf("mysql") === -1) {
     describe = (title, done) => {};
 }
 

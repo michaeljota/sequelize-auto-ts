@@ -143,7 +143,6 @@ CREATE TABLE Users (
 
 	FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
 );
-
 ```
 
 Sqlite
@@ -163,6 +162,22 @@ CREATE TABLE Users (
 );
 ```
 
+MSSQL
+
+```SQL
+CREATE TABLE Roles (
+	RoleID	INTEGER PRIMARY KEY IDENTITY,
+	RoleName	TEXT NOT NULL
+);
+
+CREATE TABLE Users (
+	UserID	INTEGER PRIMARY KEY IDENTITY,
+	RoleID	INTEGER NOT NULL,
+	UserName	TEXT NOT NULL,
+
+	FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
+);
+```
 # Generated Interfaces
 
 For this simple database with just two tables, sequelize-auto-ts will generate eight interfaces in `sequelize-types.ts`.
