@@ -10,7 +10,7 @@ import {BaseGenerator} from "./../BaseGenerator";
 
 var ScriptTemplate = require("script-template");
 
-export class DefaultGenerator extends BaseGenerator {
+export class Generator extends BaseGenerator {
 
     public generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void {
         if (!this.init(options, schema, callback))

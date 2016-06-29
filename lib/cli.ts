@@ -91,7 +91,9 @@ function processFromPrompt() {
             password : {description : "Password", required : false, hidden : true},
             targetDirectory : {description : "Target directory", required : true},
             dialect : {description : "Database dialect ( mysql, postgres, mariadb, mssql, sqlite)", required : true},
-            storage : {description : "Storage file (sqlite only)", required : false}
+            storage: { description: "Storage file (sqlite only)", required: false },
+            generator : {description : "Name of the code generator (default)", required : false},
+            generatorPath : {description : "Path of the code generator (build in)", required : false}
         }
     };
 
@@ -116,6 +118,10 @@ function generate(options : generator.GenerateOptions) : void {
         console.log("Host : " + options.options.host);
     if(options.options.storage !== undefined)
         console.log("Storage : " + options.options.storage);
+    if(options.generatorName !== undefined)
+        console.log("Generator : " + options.generatorName);
+    if(options.generatorPath !== undefined)
+        console.log("Generator Path : " + options.generatorPath);
     console.log("");
 
     if (!fs.existsSync(options.targetDirectory)) {
@@ -148,6 +154,8 @@ function showHelp() : void {
     console.log("            targetDirectory - The directory where generated files should be placed");
     console.log("            dialect         - database dialect ( mysql, postgres, mariadb, mssql, sqlite)");
     console.log("            storage         - storage file (sqlite only)");
+    console.log("            generator       - name of the code generator (default)");
+    console.log("            generatorPath   - path of the code generator (build in)");
     console.log("");
     console.log("Option 2: Interactive");
     console.log("");

@@ -48,6 +48,10 @@ function generate(options : generator.GenerateOptions) : void {
         console.log("Host : " + options.options.host);
     if(options.options.storage !== undefined)
         console.log("Storage : " + options.options.storage);
+    if(options.generatorName !== undefined)
+        console.log("Generator : " + options.generatorName);
+    if(options.generatorPath !== undefined)
+        console.log("Generator Path : " + options.generatorPath);
     console.log("");
 
     generator.generate(options, function (err) {
