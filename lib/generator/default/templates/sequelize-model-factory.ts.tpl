@@ -43,7 +43,7 @@ export class Models {
             {
                 timestamps: false,
                 classMethods: {
-                    get__tableNameSingular__: (__tableNameSingularCamel__:any) => {
+                    __getterName__: (__tableNameSingularCamel__:any) => {
                         var where:{[key:string]:any} = {};
                         var id:number = parseInt(__tableNameSingularCamel__);
                         if (isNaN(id)) {

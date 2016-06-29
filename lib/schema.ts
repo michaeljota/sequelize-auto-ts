@@ -418,7 +418,7 @@ export class Reference {
     }
 
     public primaryTableNameCamel() : string {
-        return toCamelCase(this.primaryTableName);
+        return ChangeCase.camel(this.primaryTableName);
     }
 
     public primaryTableNameModel() : string {
@@ -430,7 +430,7 @@ export class Reference {
     }
 
     public foreignTableNameCamel() : string {
-        return toCamelCase(this.foreignTableName);
+        return ChangeCase.camel(this.foreignTableName);
     }
 
     associationNameQuoted() : string {
