@@ -318,3 +318,122 @@ e.g.
 }
 ```
 
+# Create a custom Code Generator
+
+If needed you can create your own custom Code Generator for sequelize-auto-ts. The default Code Generator uses four template files and script-template as script engine.
+
+The following example explains how to access the symbol table that was created after pasing the database.
+
+
+```Shell
+$ mkdir sample
+$ cd sample
+$ npm init
+$ npm --save-dev install git://github.com/keunlee/sequelize-auto-ts.git#development
+$ npm --save install sqlite3 (or whatever you need)
+$ npm --save-dev install tsc typings
+$ mkdir mygen
+$ mkdir mytarget (the target where your output files will be created)
+```
+
+add this to the package.json
+
+```json
+...
+  "scripts": {
+    "build": "tsc"
+  }
+...
+```
+
+create a tsconfig.json at the root directory
+
+```json
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "isolatedModules": false,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "noLib": false,
+    "preserveConstEnums": true,
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
+}
+```
+
+create a file Generator.ts in the mygen directory
+
+```TypeScript
+'use strict';
+
+import generator = require("./../node_modules/sequelize-auto-ts/lib/sequelize-auto-ts");
+import schema = require("./../node_modules/sequelize-auto-ts/lib/schema");
+
+export class Generator implements generator.Generator {
+
+    public generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void {
+        console.log("Sample Generator");
+        schema.tables.forEach((table: schema.Table) => {
+            console.log("Table: " + table.tableName);
+        });
+    }
+}
+```
+
+```Shell
+$ cd node_modules
+$ cd sequelize-auto-ts
+$ npm install
+$ typings install
+$ npm run build
+$ cd ..
+$ cd ..
+```
+
+run the generator
+
+```Shell
+$ node node_modules/sequelize-auto-ts/lib/cli.js
+Automatically generate sequelize definition statements and TypeScript types for your database.
+
+prompt: Database name:  sample
+prompt: Username:  sample
+prompt: Password:
+prompt: Target directory:  mytarget
+prompt: Database dialect ( mysql, postgres, mariadb, mssql, sqlite):  sqlite
+prompt: Storage file (sqlite only):  sample.db
+prompt: Name of the code generator (default):  mygen
+prompt: Path of the code generator (build in):  C:\projects\sample
+Database: sample
+Username: sample
+Password: <hidden>
+Target  : mytarget
+Database Dialect: sqlite
+Storage : sample.db
+Generator : mygen
+Generator Path : C:\projects\sample
+
+Executing (default): select name from sqlite_master where name != 'sqlite_sequence' order by name
+Executing (default): PRAGMA table_info('Roles')
+Executing (default): PRAGMA table_info('Users')
+Executing (default): select name from sqlite_master where name != 'sqlite_sequence' order by name
+Executing (default): PRAGMA foreign_key_list('Roles')
+Executing (default): PRAGMA foreign_key_list('Users')
+Sample Generator
+Table: Roles
+Table: Users
+```
+
+As a result you will see the tables taken from the schema reader.

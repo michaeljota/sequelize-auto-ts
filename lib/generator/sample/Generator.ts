@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/index.d.ts"/>
 'use strict';
 
-
 import generator = require("./../../sequelize-auto-ts");
 import schema = require("./../../schema");
 
