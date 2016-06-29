@@ -1,3 +1,6 @@
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
+
 export interface Dictionary<TValue> {
     [key : string] : TValue;
 }

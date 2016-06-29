@@ -2,8 +2,8 @@
 {
     "files.exclude": {
         "*/**/.swp": true,
-        "lib/*.js.map": true,
-        "lib/*.js": true,
+        "lib/**/*.js.map": true,
+        "lib/**/*.js": true,
         "examples/**/*.js.map": true,
         "examples/**/*.js": true,
         "test/**/*.js.map": true,

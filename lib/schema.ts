@@ -1,9 +1,11 @@
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
+
 /****************************
  *
  * Loads and exposes schema from database
  */
 
-/// <reference path="../typings/index.d.ts"/>
 
 import util = require('./util');
 
