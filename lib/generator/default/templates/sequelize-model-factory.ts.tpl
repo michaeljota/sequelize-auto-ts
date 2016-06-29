@@ -8,7 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////
 
-/// <reference path="../typings/index.d.ts"/>
+/// <reference path="../../typings/index.d.ts"/>
 
 import types = require('./sequelize-types');
 import sequelize = require("sequelize");

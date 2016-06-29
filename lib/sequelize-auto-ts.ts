@@ -41,9 +41,9 @@ export function generate(options : GenerateOptions, callback? : (err : Error) =>
 function generateTypes(options : GenerateOptions, schema : schema.Schema, callback : (err : Error) => void) : void {
     schema.useModelFactory = options.modelFactory;
 
-    generateFromTemplate(options, schema, "sequelize-types.ts", function (err : Error) {
-        generateFromTemplate(options, schema, "sequelize-names.ts", function (err : Error) {
-            var template : string = options.modelFactory ? "sequelize-model-factory.ts" : "sequelize-models.ts";
+    generateFromTemplate(options, schema, "generator/default/templates/sequelize-types.ts.tpl", function (err : Error) {
+        generateFromTemplate(options, schema, "generator/default/templates/sequelize-names.ts.tpl", function (err : Error) {
+            var template : string = options.modelFactory ? "generator/default/templates/sequelize-model-factory.ts.tpl" : "generator/default/templates/sequelize-models.ts.tpl";
             generateFromTemplate(options, schema, template, callback);
         });
     });
@@ -59,7 +59,8 @@ function generateFromTemplate(options : GenerateOptions, schema : schema.Schema,
 
     genText = translateReferences(genText, options);
 
-    fs.writeFileSync(path.join(options.targetDirectory, templateName), genText);
+    var baseName = path.basename(templateName, ".tpl");
+    fs.writeFileSync(path.join(options.targetDirectory, baseName), genText);
 
     callback(null);
 }
