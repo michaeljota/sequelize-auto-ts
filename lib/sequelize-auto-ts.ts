@@ -27,7 +27,7 @@ export function generate(options : api.IGenerateOptions, callback? : (err : Erro
     try {
         var generatorFullPath = path.join(path.join(generatorPath, generatorName), 'Generator.js');
         if (!fs.existsSync(generatorFullPath)) {
-            generatorPath = "./"; // from the callers directory
+            generatorPath = process.cwd();
             generatorFullPath = path.join(path.join(generatorPath, generatorName), 'Generator.js');
         }
         var gen = require(generatorFullPath);

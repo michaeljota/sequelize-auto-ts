@@ -55,7 +55,7 @@ export abstract class BaseGenerator implements api.IGenerator {
     }
 
     private findTargetProjectRootDirectory(options : api.IGenerateOptions) : string {
-        var dir : string = options.targetDirectory;
+        var dir : string = path.resolve(options.targetDirectory);
 
         while (!this.hasFile(dir, "package.json")) {
             var parent : string = path.resolve(dir, "..");
