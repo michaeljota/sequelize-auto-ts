@@ -404,6 +404,8 @@ run the generator
 
 ```Shell
 $ node node_modules/sequelize-auto-ts/lib/cli.js
+sequelize-auto-ts
+
 Automatically generate sequelize definition statements and TypeScript types for your database.
 
 prompt: Database name:  sample
@@ -413,7 +415,7 @@ prompt: Target directory:  mytarget
 prompt: Database dialect ( mysql, postgres, mariadb, mssql, sqlite):  sqlite
 prompt: Storage file (sqlite only):  sample.db
 prompt: Name of the code generator (default):  mygen
-prompt: Path of the code generator (build in):  C:\projects\sample
+prompt: Path of the code generator (build in):
 Database: sample
 Username: sample
 Password: <hidden>
@@ -421,7 +423,7 @@ Target  : mytarget
 Database Dialect: sqlite
 Storage : sample.db
 Generator : mygen
-Generator Path : C:\projects\sample
+Generator Path :
 
 Executing (default): select name from sqlite_master where name != 'sqlite_sequence' order by name
 Executing (default): PRAGMA table_info('Roles')
