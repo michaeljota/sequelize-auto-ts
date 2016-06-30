@@ -3,6 +3,7 @@
 
 import fs = require("fs");
 import path = require("path");
+import _ = require('lodash');
 var prompt = require("prompt");
 
 import generator = require("./sequelize-auto-ts");
