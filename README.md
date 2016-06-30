@@ -333,6 +333,8 @@ $ npm --save-dev install git://github.com/keunlee/sequelize-auto-ts.git#developm
 $ npm --save install sequelize
 $ npm --save install sqlite3 (or whatever you need)
 $ npm install -g tsc typings (if not already installed globally)
+$ typings init
+$ typings install
 $ mkdir mygen
 $ mkdir mytarget (the target where your output files will be created)
 ```
@@ -379,14 +381,13 @@ create a file Generator.ts in the mygen directory
 ```TypeScript
 'use strict';
 
-import generator = require("./../node_modules/sequelize-auto-ts/lib/sequelize-auto-ts");
-import schema = require("./../node_modules/sequelize-auto-ts/lib/schema");
+import * as gen from 'sequelize-auto-ts';
 
-export class Generator implements generator.Generator {
+export class Generator implements gen.api.IGenerator {
 
-    public generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void {
+    public generateTypes(options: gen.api.IGenerateOptions, schema: gen.api.ISchema, callback: (err: Error) => void): void {
         console.log("Sample Generator");
-        schema.tables.forEach((table: schema.Table) => {
+        schema.tables.forEach((table: gen.api.ITable) => {
             console.log("Table: " + table.tableName);
         });
     }
