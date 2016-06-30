@@ -1,7 +1,6 @@
 'use strict';
-
-var api = require("./lib/api");
-var BaseGenerator = require("./lib/generator/BaseGenerator");
-
+var api = require('./lib/api');
 exports.api = api;
-exports.BaseGenerator = BaseGenerator.BaseGenerator;
+var BaseGenerator_1 = require('./lib/generator/BaseGenerator');
+exports.BaseGenerator = BaseGenerator_1.BaseGenerator;
+//# sourceMappingURL=index.js.map
