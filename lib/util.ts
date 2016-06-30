@@ -1,9 +1,7 @@
 /// <reference path="../typings/index.d.ts"/>
 'use strict';
 
-export interface Dictionary<TValue> {
-    [key : string] : TValue;
-}
+import api = require("./api");
 
 export function camelCase(s : string) : string {
     switch (s.length) {
@@ -18,8 +16,8 @@ export function camelCase(s : string) : string {
     }
 }
 
-export function arrayToDictionary<T>(array : T[], key : any) : Dictionary<T> {
-    var d : Dictionary<T> = {};
+export function arrayToDictionary<T>(array : T[], key : any) : api.IDictionary<T> {
+    var d : api.IDictionary<T> = {};
     var keyFn : (t : T) => string;
 
     if (typeof key === 'string') {

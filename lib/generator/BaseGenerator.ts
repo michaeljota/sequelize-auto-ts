@@ -5,17 +5,16 @@ import fs = require("fs");
 import path = require("path");
 import _ = require("lodash");
 
-import generator = require("./../sequelize-auto-ts");
-import schema = require("./../schema");
+import api = require("./../api");
 
-export abstract class BaseGenerator implements generator.Generator {
+export abstract class BaseGenerator implements api.IGenerator {
     private targetProjectRootDirectory: string = null;
-    private options: generator.GenerateOptions = null;
-    private schema: schema.Schema = null;
+    private options: api.IGenerateOptions = null;
+    private schema: api.ISchema = null;
 
-    public abstract generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void;
+    public abstract generateTypes(options: api.IGenerateOptions, schema: api.ISchema, callback: (err: Error) => void): void;
 
-    protected init(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): boolean {
+    protected init(options: api.IGenerateOptions, schema: api.ISchema, callback: (err: Error) => void): boolean {
         this.options = options;
         this.schema = schema;
         return true;
@@ -28,7 +27,7 @@ export abstract class BaseGenerator implements generator.Generator {
         return this.targetProjectRootDirectory;
     }
 
-    protected translateReferences(source : string, options : generator.GenerateOptions) : string {
+    protected translateReferences(source : string, options : api.IGenerateOptions) : string {
         var re : RegExp = new RegExp("///\\s+<reference\\s+path=[\"'][\\./\\w\\-\\d]+?([\\w\\.\\-]+)[\"']\\s*/>", "g");
 
         var self = this;
@@ -55,7 +54,7 @@ export abstract class BaseGenerator implements generator.Generator {
         return source.replace(re, replaceFileName);
     }
 
-    private findTargetProjectRootDirectory(options : generator.GenerateOptions) : string {
+    private findTargetProjectRootDirectory(options : api.IGenerateOptions) : string {
         var dir : string = options.targetDirectory;
 
         while (!this.hasFile(dir, "package.json")) {

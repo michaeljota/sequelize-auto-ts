@@ -2,6 +2,7 @@
 
 var config = require('./test/config.js');
 try { config = require('./test/config.local.js'); } catch (ex) { }
+import api = require("./lib/api");
 import generator = require("./lib/sequelize-auto-ts");
 
 for (var dialect of config.runOnDialects) {
@@ -25,7 +26,7 @@ for (var dialect of config.runOnDialects) {
         }
     };*/
 
-    var generateOptions = <generator.GenerateOptions>{
+    var generateOptions = <api.IGenerateOptions>{
         database: entry.database,
         username: entry.username,
         password: entry.password,
@@ -38,7 +39,7 @@ for (var dialect of config.runOnDialects) {
     generate(generateOptions);
 }
 
-function generate(options : generator.GenerateOptions) : void {
+function generate(options : api.IGenerateOptions) : void {
     console.log("Database: " + options.database);
     console.log("Username: " + options.username);
     console.log("Password: <hidden>");

@@ -7,7 +7,6 @@ typings
 pids
 *.pid
 *.seed
-gentest.d.ts
 gentest.js
 gentest.js.map
 

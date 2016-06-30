@@ -6,8 +6,8 @@
  * Loads and exposes schema from database
  */
 
-
 import util = require('./util');
+import api = require('./api');
 
 import sequelize = require('sequelize');
 var Sequelize : sequelize.SequelizeStatic = require("sequelize");
@@ -18,25 +18,25 @@ import ChangeCase = require('change-case');
 const DEFAULT_CASE_TYPE = 'pascalCase';
 var naming : any;
 
-export class Schema {
+class Schema implements api.ISchema {
 
     public static idSuffix : string = "id"; // NOTE: Must be LOWER case
 
-    public references : Reference[] = [];
-    public xrefs : Xref[] = [];
-    public associations : Association[] = [];
-    public calculatedFields : Array<Field> = [];
-    public views : Table[] = [];
-    public idFields : Field[] = [];
-    public idFieldLookup : util.Dictionary<boolean> = {};
+    public references : api.IReference[] = [];
+    public xrefs : api.IXref[] = [];
+    public associations : api.IAssociation[] = [];
+    public calculatedFields : Array<api.IField> = [];
+    public views : api.ITable[] = [];
+    public idFields : api.IField[] = [];
+    public idFieldLookup : api.IDictionary<boolean> = {};
 
     public useModelFactory : boolean = false;
 
-    constructor(public tables : Array<Table>) {
+    constructor(public tables : Array<api.ITable>) {
 
     }
 
-    public static fieldTypeTranslations : util.Dictionary<string> = {
+    public static fieldTypeTranslations : api.IDictionary<string> = {
 
         tinyint : "boolean",
 
@@ -88,7 +88,7 @@ export class Schema {
         "USER-DEFINED" : "string"
     };
 
-    public static fieldTypeSequelize : util.Dictionary<string> = {
+    public static fieldTypeSequelize : api.IDictionary<string> = {
 
         tinyint : 'Sequelize.BOOLEAN',
 
@@ -166,7 +166,7 @@ export class Schema {
             if (table.isView || table.tableName.substr(0, 4) === 'Xref') {
                 return;
             }
-            var pk : Field = table.fields[0];
+            var pk : api.IField = table.fields[0];
 
             if (foundIds[pk.fieldName]) {
                 return;
@@ -185,11 +185,11 @@ export class Schema {
     }
 }
 
-export class Table {
-    fields : Array<Field> = [];
+class Table implements api.ITable {
+    fields : Array<api.IField> = [];
     isView : boolean = false;
 
-    constructor(public schema : Schema, public tableName : string) {
+    constructor(public schema : api.ISchema, public tableName : string) {
 
     }
 
@@ -244,16 +244,16 @@ export class Table {
         return this.schema.useModelFactory ? this.tableNameCamel() : this.tableName;
     }
 
-    public realDbFields() : Field[] {
+    public realDbFields() : api.IField[] {
         return this.fields.filter(f => !f.isReference && !f.isCalculated);
     }
 
-    idField() : Field {
+    idField() : api.IField {
         return _.find(this.fields, f => f.isIdField());
     }
 
     idFieldName() : string {
-        var idField : Field = this.idField();
+        var idField : api.IField = this.idField();
         if (idField === undefined) {
             // console.log('Unable to find ID field for type: ' + this.tableName);
             return '!!cannotFindIdFieldOn' + this.tableName + '!!';
@@ -262,7 +262,7 @@ export class Table {
     }
 
     idFieldNameTitleCase() : string {
-        var idField : Field = this.idField();
+        var idField : api.IField = this.idField();
         if (idField === undefined) {
             // console.log('Unable to find ID field for type: ' + this.tableName);
             return '!!cannotFindIdFieldOn' + this.tableName + '!!';
@@ -271,7 +271,7 @@ export class Table {
     }
 }
 
-export class Field {
+class Field implements api.IField {
     public targetIdFieldType : string; // if this is a prefixed foreign key, then the name of the non-prefixed key is here
 
     constructor(public fieldName : string, public fieldType : string, public columnType : string, public columnDefault : string, public isNullableString : string, public table : Table, public isReference : boolean = false, public isCalculated : boolean = false) {
@@ -395,7 +395,7 @@ export class Field {
     }
 }
 
-export class Reference {
+class Reference implements api.IReference {
 
     constructor(public primaryTableName : string,
                 public foreignTableName : string,
@@ -403,7 +403,7 @@ export class Reference {
                 public primaryKey : string,
                 public foreignKey : string,
                 public isView : boolean,
-                public schema : Schema) {
+                public schema : api.ISchema) {
 
     }
 
@@ -442,7 +442,7 @@ export class Reference {
     }
 }
 
-export class Xref {
+class Xref implements api.IXref {
 
     constructor(public firstTableName : string,
                 public firstFieldName : string,
@@ -473,7 +473,7 @@ export class Xref {
 }
 
 // Associations are named foreign keys, like OwnerUserID
-export class Association {
+class Association implements api.IAssociation {
     constructor(public associationName : string) {
     }
 }
@@ -499,18 +499,18 @@ interface CustomFieldDefinitionRow extends ColumnDefinitionRow, ReferenceDefinit
 
 }
 
-export function read(database : string, username : string, password : string, options : sequelize.Options, namingOptions : any, callback : (err : Error, schema : Schema) => void) : void {
+export function read(database : string, username : string, password : string, options : sequelize.Options, namingOptions : any, callback : (err : Error, schema : api.ISchema) => void) : void {
     naming = namingOptions || {};
     naming.defaults = naming.defaults || {};
     naming.defaults.caseType = naming.defaults.caseType || DEFAULT_CASE_TYPE;
 
     var schema : Schema;
     var sequelize : sequelize.Sequelize = new Sequelize(database, username, password, options);
-    var tableLookup : util.Dictionary<Table> = {};
-    var xrefs : util.Dictionary<Xref> = {};
-    var associationsFound : util.Dictionary<boolean> = {};
+    var tableLookup : api.IDictionary<Table> = {};
+    var xrefs : api.IDictionary<Xref> = {};
+    var associationsFound : api.IDictionary<boolean> = {};
     var customReferenceRows : ReferenceDefinitionRow[] = [];
-    var idFieldLookup : util.Dictionary<boolean> = {};
+    var idFieldLookup : api.IDictionary<boolean> = {};
 
     var sql : string =
         "select table_name, column_name, is_nullable, data_type, column_type, column_default, ordinal_position " +
@@ -650,7 +650,7 @@ export function read(database : string, username : string, password : string, op
                 return;
             }
 
-            var customFieldLookup : util.Dictionary<ColumnDefinitionRow> =
+            var customFieldLookup : api.IDictionary<ColumnDefinitionRow> =
                 util.arrayToDictionary(customFields, 'column_name');
 
             var combined : ColumnDefinitionRow[] = originalRows.concat(customFields);
@@ -675,7 +675,7 @@ export function read(database : string, username : string, password : string, op
             : 0)));
     }
 
-    function processTablesAndColumnsWithCustom(rows : ColumnDefinitionRow[], customFieldLookup : util.Dictionary<ColumnDefinitionRow>) : void {
+    function processTablesAndColumnsWithCustom(rows : ColumnDefinitionRow[], customFieldLookup : api.IDictionary<ColumnDefinitionRow>) : void {
 
         var tables : Array<Table> = [];
         schema = new Schema(tables);
@@ -1094,7 +1094,7 @@ export function read(database : string, username : string, password : string, op
             return;
         }
 
-        var idFields : Array<Field> = [];
+        var idFields : Array<api.IField> = [];
 
         var idSuffixLen : number = idSuffix.length;
 
@@ -1105,7 +1105,7 @@ export function read(database : string, username : string, password : string, op
                 continue;
             }
 
-            var field : Field = table.fields[0];
+            var field : api.IField = table.fields[0];
             var fieldName : string = field.fieldName;
 
             if (!idFieldLookup[fieldName] &&
@@ -1136,7 +1136,7 @@ export function read(database : string, username : string, password : string, op
 
             // first field is never a prefixed foreign key
             for (var fieldIndex : number = 1; fieldIndex < table.fields.length; fieldIndex++) {
-                var field : Field = table.fields[fieldIndex];
+                var field : api.IField = table.fields[fieldIndex];
                 var fieldName : string = field.fieldName;
 
                 if (!idFieldLookup[fieldName] &&

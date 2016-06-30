@@ -2,31 +2,11 @@
 'use strict';
 
 import path = require("path");
-import fs = require("fs");
-import sequelize = require('sequelize');
+import api = require("./api");
 import schema = require("./schema");
-//import {DefaultGenerator} from "./generator/default/DefaultGenerator";
 
-var Sequelize : sequelize.SequelizeStatic = require("sequelize");
-
-export interface GenerateOptions {
-    database : string;
-    username : string;
-    password : string;
-    options : sequelize.Options;
-    naming : any;
-    modelFactory? : boolean;
-    targetDirectory: string;
-    generatorName?: string;
-    generatorPath?: string;
-}
-
-export interface Generator {
-    generateTypes(options: GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void;
-}
-
-export function generate(options : GenerateOptions, callback? : (err : Error) => void) : void {
-    var generator: Generator = null;
+export function generate(options : api.IGenerateOptions, callback? : (err : Error) => void) : void {
+    var generator: api.IGenerator = null;
 
     if (callback == undefined) {
         callback = function (err : Error) : void {
@@ -50,7 +30,7 @@ export function generate(options : GenerateOptions, callback? : (err : Error) =>
     }
 
     schema.read(options.database, options.username, options.password, options.options, options.naming,
-        function (err : Error, schema : schema.Schema) {
+        function (err : Error, schema : api.ISchema) {
             if (err) {
                 callback(err);
                 return;

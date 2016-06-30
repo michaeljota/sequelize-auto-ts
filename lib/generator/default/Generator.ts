@@ -4,15 +4,14 @@
 import fs = require("fs");
 import path = require("path");
 
-import generator = require("./../../sequelize-auto-ts");
-import schema = require("./../../schema");
+import api = require("./../../api");
 import {BaseGenerator} from "./../BaseGenerator";
 
 var ScriptTemplate = require("script-template");
 
 export class Generator extends BaseGenerator {
 
-    public generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void {
+    public generateTypes(options: api.IGenerateOptions, schema: api.ISchema, callback: (err: Error) => void): void {
         if (!this.init(options, schema, callback))
             return;
 
@@ -25,7 +24,7 @@ export class Generator extends BaseGenerator {
         });
     }
 
-    private generateFromTemplate(options : generator.GenerateOptions, schema : schema.Schema, templateName : string, callback : (err : Error) => void) : void {
+    private generateFromTemplate(options : api.IGenerateOptions, schema : api.ISchema, templateName : string, callback : (err : Error) => void) : void {
         console.log("Generating " + templateName);
 
         var templateText : string = fs.readFileSync(path.join(__dirname, templateName), "utf8");

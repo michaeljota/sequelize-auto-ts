@@ -330,8 +330,9 @@ $ mkdir sample
 $ cd sample
 $ npm init
 $ npm --save-dev install git://github.com/keunlee/sequelize-auto-ts.git#development
+$ npm --save install sequelize
 $ npm --save install sqlite3 (or whatever you need)
-$ npm --save-dev install tsc typings
+$ npm install -g tsc typings (if not already installed globally)
 $ mkdir mygen
 $ mkdir mytarget (the target where your output files will be created)
 ```
@@ -392,14 +393,10 @@ export class Generator implements generator.Generator {
 }
 ```
 
+compile the local generator
+
 ```Shell
-$ cd node_modules
-$ cd sequelize-auto-ts
-$ npm install
-$ typings install
 $ npm run build
-$ cd ..
-$ cd ..
 ```
 
 run the generator

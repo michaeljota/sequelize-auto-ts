@@ -1,14 +1,13 @@
 /// <reference path="../../../typings/index.d.ts"/>
 'use strict';
 
-import generator = require("./../../sequelize-auto-ts");
-import schema = require("./../../schema");
+import api = require("./../../api");
 
-export class Generator implements generator.Generator {
+export class Generator implements api.IGenerator {
 
-    public generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void {
+    public generateTypes(options: api.IGenerateOptions, schema: api.ISchema, callback: (err: Error) => void): void {
         console.log("Sample Generator");
-        schema.tables.forEach((table: schema.Table) => {
+        schema.tables.forEach((table: api.ITable) => {
             console.log("Table: " + table.tableName);
         });
     }

@@ -1,6 +1,5 @@
 /// <reference path="../../../typings/index.d.ts" />
-import generator = require("./../../sequelize-auto-ts");
-import schema = require("./../../schema");
-export declare class Generator implements generator.Generator {
-    generateTypes(options: generator.GenerateOptions, schema: schema.Schema, callback: (err: Error) => void): void;
+import api = require("./../../api");
+export declare class Generator implements api.IGenerator {
+    generateTypes(options: api.IGenerateOptions, schema: api.ISchema, callback: (err: Error) => void): void;
 }

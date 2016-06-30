@@ -2,6 +2,7 @@
 'use strict';
 
 import generator = require("./sequelize-auto-ts");
+import api = require("./api");
 import fs = require("fs");
 import path = require("path");
 import _ = require("lodash");
@@ -43,7 +44,7 @@ function processFromCommandLines() {
         showHelp();
         process.exit(1);
     }
-    var options : generator.GenerateOptions = <generator.GenerateOptions>_.merge({
+    var options : api.IGenerateOptions = <api.IGenerateOptions>_.merge({
         modelFactory : modelFactory,
         options : null
     }, settingsJSON);
@@ -104,11 +105,11 @@ function processFromPrompt() {
             dialect : result.dialect,
             storage : result.storage
         };
-        generate(<generator.GenerateOptions>result);
+        generate(<api.IGenerateOptions>result);
     })
 }
 
-function generate(options : generator.GenerateOptions) : void {
+function generate(options : api.IGenerateOptions) : void {
     console.log("Database: " + options.database);
     console.log("Username: " + options.username);
     console.log("Password: <hidden>");
