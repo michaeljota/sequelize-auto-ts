@@ -3,7 +3,6 @@
 
 import fs = require("fs");
 import path = require("path");
-import _ = require("lodash");
 var prompt = require("prompt");
 
 import generator = require("./sequelize-auto-ts");
@@ -39,8 +38,11 @@ function processFromCommandLines() {
         options : {
             dialect : args[4],
             storage : args[5]
-        }
+        },
+        generatorName : args[6],
+        generatorPath : args[7]
     };
+
     if (!args.length || (!settingsJSON && args.length < 5)) {
         showHelp();
         process.exit(1);
@@ -148,7 +150,7 @@ function showHelp() : void {
     console.log("");
     console.log("    or");
     console.log("");
-    console.log("    sequelize-auto-ts database username password targetDirectory");
+    console.log("    sequelize-auto-ts database username password targetDirectory dialect storage generator generatorPath");
     console.log("");
     console.log("            database        - The name of the local database to generate typings/definitions from");
     console.log("            username        - database user with access to read from database");

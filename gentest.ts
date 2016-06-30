@@ -16,15 +16,7 @@ for (var dialect of config.runOnDialects) {
         dialect: dialect
     };
 
-    var naming = null; /*{
-        "defaults": {
-            "caseType": "pascal"
-        },
-        "associationName": {
-            "caseType": "snake",
-            "tail": null
-        }
-    };*/
+    var naming = null;
 
     var generateOptions = <api.IGenerateOptions>{
         database: entry.database,
@@ -32,8 +24,9 @@ for (var dialect of config.runOnDialects) {
         password: entry.password,
         options: options,
         naming: naming,
-        //modelFactory?: boolean;
-        targetDirectory: __dirname + "/test/gen/" + dialect
+        modelFactory: null,
+        targetDirectory: __dirname + "/test/gen/" + dialect,
+        generatorName: null
     };
 
     generate(generateOptions);

@@ -1,9 +1,9 @@
 /// <reference path="../../typings/index.d.ts"/>
+
 'use strict';
 
-import fs = require("fs");
-import path = require("path");
-import _ = require("lodash");
+const fs = require('fs');
+const path = require('path');
 
 import api = require("./../api");
 
@@ -70,10 +70,9 @@ export abstract class BaseGenerator implements api.IGenerator {
     }
 
     private hasFile(directory : string, file : string) : boolean {
-        var files : string[] = fs.readdirSync(directory);
-        return _.contains(files, file);
+        var files: string[] = fs.readdirSync(directory);
+        return (files.indexOf(file) >= 0);
     }
-
 
     private findTargetPath(fileName : string, searchDirectory : string) : string {
         var target : string = path.join(searchDirectory, fileName);
@@ -86,7 +85,7 @@ export abstract class BaseGenerator implements api.IGenerator {
             var childName : string = childDirectories[i];
             var childPath : string = path.join(searchDirectory, childName);
 
-            var stat : fs.Stats = fs.statSync(childPath);
+            var stat = fs.statSync(childPath);
 
             if (stat.isDirectory() && childName.charAt(0) != '.' && childName != 'node_modules') {
                 target = this.findTargetPath(fileName, childPath);

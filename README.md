@@ -318,6 +318,11 @@ e.g.
 }
 ```
 
+# Built-in Generators
+
+* default: This is the original default generator.
+* entities: This generator creates an additional file with entity interfaces. It can be used e.g. for data transfer objects (DTOs) between the frontend and the backend. No sequelize code is used in the entity file.
+
 # Create a custom Code Generator
 
 If needed you can create your own custom Code Generator for sequelize-auto-ts. The default Code Generator uses four template files and script-template as script engine.

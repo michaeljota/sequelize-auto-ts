@@ -15,7 +15,10 @@ export interface ITable {
     schema: ISchema;
     tableName: string;
     fields: Array<IField>;
+    columns: Array<IField>;
+    refs: Array<IField>;
     isView: boolean;
+    entityName(): string;
     pojoName(): string;
     instanceTypeName(): string;
     modelTypeName(): string;

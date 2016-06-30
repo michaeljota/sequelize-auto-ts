@@ -144,7 +144,7 @@ class Schema implements api.ISchema {
     public uniqueReferences() : Reference[] {
         var u : Reference[] = [];
 
-        var foundIds : _.Dictionary<boolean> = {};
+        var foundIds : api.IDictionary<boolean> = {};
 
         this.references.forEach(addReferenceIfUnique);
 
@@ -186,11 +186,18 @@ class Schema implements api.ISchema {
 }
 
 class Table implements api.ITable {
-    fields : Array<api.IField> = [];
-    isView : boolean = false;
+    fields: Array<api.IField> = [];
+    columns: Array<api.IField> = [];
+    refs: Array<api.IField> = [];
+    isView: boolean = false;
 
     constructor(public schema : api.ISchema, public tableName : string) {
 
+    }
+
+    entityName() : string {
+        var name : string = ChangeCase.snake(this.tableName);
+        return ChangeCase[naming.defaults.caseType](name);
     }
 
     pojoName() : string {
@@ -700,6 +707,7 @@ export function read(database : string, username : string, password : string, op
 
             var field : Field = new Field(row.column_name, row.data_type, row.column_type, row.column_default, row.is_nullable, table, false, isCalculated);
             table.fields.push(field);
+            table.columns.push(field);
 
             if (isCalculated && !calculatedFieldsFound[field.fieldName]) {
                 schema.calculatedFields.push(field);
@@ -889,7 +897,7 @@ export function read(database : string, username : string, password : string, op
 
             // create singular parent reference from child if it's not reflexive
             if(row.table_name != row.referenced_table_name ) {
-                childTable.fields.push(new Field(
+                var field = new Field(
                     util.camelCase(Sequelize.Utils.singularize(
                         (associationName === undefined || associationName === "")
                             ? row.referenced_table_name                             // Accounts -> account
@@ -899,7 +907,9 @@ export function read(database : string, username : string, password : string, op
                     undefined,
                     undefined,
                     childTable,
-                        true));
+                    true);
+                childTable.fields.push(field);
+                childTable.refs.push(field);
             }
 
             // tell Sequelize about the reference
@@ -943,24 +953,29 @@ export function read(database : string, username : string, password : string, op
                 var firstTable : Table = tableLookup[xref.firstTableName];
                 var secondTable : Table = tableLookup[xref.secondTableName];
 
-                firstTable.fields.push(new Field(
+                var field = new Field(
                     util.camelCase(xref.secondTableName),
                     Sequelize.Utils.singularize(xref.secondTableName) + 'Pojo[]',
                     undefined,
                     undefined,
                     undefined,
                     firstTable,
-                    true));
+                    true);
 
-                secondTable.fields.push(new Field(
+                firstTable.fields.push(field);
+                firstTable.refs.push(field);
+
+                field = new Field(
                     util.camelCase(xref.firstTableName),
                     Sequelize.Utils.singularize(xref.firstTableName) + 'Pojo[]',
                     undefined,
                     undefined,
                     undefined,
                     secondTable,
-                    true));
+                    true);
 
+                secondTable.fields.push(field);
+                secondTable.refs.push(field);
             }
         }
     }
@@ -1066,23 +1081,27 @@ export function read(database : string, username : string, password : string, op
 
             var otherTableSingular : string = Sequelize.Utils.singularize(otherTableName);
 
-            view.fields.push(new Field(
+            var field = new Field(
                 otherTableSingular,
                 otherTableSingular + 'Pojo',
                 undefined,
                 undefined,
                 undefined,
                 view,
-                true));
+                true);
+            view.fields.push(field);
+            view.refs.push(field);
 
-            otherTable.fields.push(new Field(
+            field = new Field(
                 util.camelCase(view.tableName),
                 Sequelize.Utils.singularize(view.tableName) + 'Pojo[]',
                 undefined,
                 undefined,
                 undefined,
                 otherTable,
-                true));
+                true);
+            otherTable.fields.push(field);
+            otherTable.refs.push(field);
 
         }
     }

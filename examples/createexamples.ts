@@ -16,24 +16,15 @@ for (var dialect of config.runOnDialects) {
         dialect: dialect
     };
 
-    var naming = null; /*{
-        "defaults": {
-            "caseType": "pascal"
-        },
-        "associationName": {
-            "caseType": "snake",
-            "tail": null
-        }
-    };*/
-
     var generateOptions = <api.IGenerateOptions>{
         database: entry.database,
         username: entry.username,
         password: entry.password,
         options: options,
-        naming: naming,
-        //modelFactory?: boolean;
-        targetDirectory: __dirname + "/" + dialect
+        naming: null,
+        modelFactory: null,
+        targetDirectory: __dirname + "/" + dialect,
+        generatorName: null
     };
 
     generate(generateOptions);
