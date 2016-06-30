@@ -1,12 +1,13 @@
 /// <reference path="../typings/index.d.ts"/>
 'use strict';
 
-import generator = require("./sequelize-auto-ts");
-import api = require("./api");
 import fs = require("fs");
 import path = require("path");
 import _ = require("lodash");
 var prompt = require("prompt");
+
+import generator = require("./sequelize-auto-ts");
+import api = require("./api");
 
 console.log("sequelize-auto-ts");
 console.log("");

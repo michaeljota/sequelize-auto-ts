@@ -2,27 +2,34 @@
 'use strict';
 
 import path = require("path");
+import fs = require("fs");
 import api = require("./api");
 import schema = require("./schema");
 
 export function generate(options : api.IGenerateOptions, callback? : (err : Error) => void) : void {
     var generator: api.IGenerator = null;
+    var generatorPath = options.generatorPath;
+    var generatorName = options.generatorName;
 
     if (callback == undefined) {
         callback = function (err : Error) : void {
         };
     }
 
-    if (options.generatorPath == undefined) {
-        options.generatorPath = path.join(__dirname, 'generator');
+    if (isNullOrWhiteSpace(options.generatorPath)) {
+        generatorPath = path.join(__dirname, 'generator');
     }
 
-    if (options.generatorName == undefined) {
-        options.generatorName = "default";
+    if (isNullOrWhiteSpace(options.generatorName)) {
+        generatorName = "default";
     }
 
     try {
-        var generatorFullPath = path.join(path.join(options.generatorPath, options.generatorName), 'Generator.js');
+        var generatorFullPath = path.join(path.join(generatorPath, generatorName), 'Generator.js');
+        if (!fs.existsSync(generatorFullPath)) {
+            generatorPath = "./"; // from the callers directory
+            generatorFullPath = path.join(path.join(generatorPath, generatorName), 'Generator.js');
+        }
         var gen = require(generatorFullPath);
         generator = new gen.Generator();
     } catch (err) {
@@ -38,4 +45,8 @@ export function generate(options : api.IGenerateOptions, callback? : (err : Erro
             schema.useModelFactory = options.modelFactory;
             generator.generateTypes(options, schema, callback);
         });
+}
+
+function isNullOrWhiteSpace(str){
+    return str == null || str.replace(/\s/g, '').length < 1;
 }

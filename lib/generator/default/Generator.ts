@@ -3,11 +3,10 @@
 
 import fs = require("fs");
 import path = require("path");
+var ScriptTemplate = require("script-template");
 
 import api = require("./../../api");
 import {BaseGenerator} from "./../BaseGenerator";
-
-var ScriptTemplate = require("script-template");
 
 export class Generator extends BaseGenerator {
 

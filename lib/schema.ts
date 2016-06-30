@@ -6,14 +6,14 @@
  * Loads and exposes schema from database
  */
 
-import util = require('./util');
-import api = require('./api');
-
 import sequelize = require('sequelize');
 var Sequelize : sequelize.SequelizeStatic = require("sequelize");
 import fs = require('fs');
 import _ = require('lodash');
 import ChangeCase = require('change-case');
+
+import util = require('./util');
+import api = require('./api');
 
 const DEFAULT_CASE_TYPE = 'pascalCase';
 var naming : any;
