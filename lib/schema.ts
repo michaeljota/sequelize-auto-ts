@@ -31,8 +31,8 @@ class TypeMapper {
 
         switch (dialect) {
             case 'mssql':
-                TypeMapper.fieldTypeTranslations["bit"] = "string";
-                TypeMapper.fieldTypeSequelize["bit"] = "Sequelize.STRING";
+                TypeMapper.fieldTypeTranslations["bit"] = "boolean";
+                TypeMapper.fieldTypeSequelize["bit"] = "Sequelize.BOOLEAN";
                 break;
         }
     }
