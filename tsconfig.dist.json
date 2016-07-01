@@ -2,6 +2,8 @@
   "compilerOptions": {
     "sourceMap": true,
     "target": "es5",
+    "rootDir": "lib",
+    "outDir": "dist/",
     "module": "commonjs",
     "moduleResolution": "node",
     "isolatedModules": false,
@@ -18,6 +20,9 @@
   "exclude": [
     "node_modules",
     "typings",
-    "index.ts"
+    "index.ts",
+    "examples",
+    "test",
+    "gentest.ts"
   ]
 }
