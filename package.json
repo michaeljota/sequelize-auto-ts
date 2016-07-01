@@ -3,6 +3,13 @@
   "version": "2.9.1",
   "author": "Samuel Neff <sam@serndesign.com> https://github.com/samuelneff",
   "description": "Generates Sequelize definition statements and TypeScript interfaces for tables in a database.",
+  "main": "dist/cli.js",
+  "bin": {
+    "sequelize-auto-ts": "dist/cli.js"
+  },
+  "files": [
+    "dist/"
+  ],
   "keywords": [
     "Sequelize",
     "orm",
@@ -12,7 +19,7 @@
     "typescript"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "rimraf dist/ && tsc"
   },
   "homepage": "https://github.com/samuelneff/sequelize-auto-ts",
   "bugs": "https://github.com/samuelneff/sequelize-auto-ts/issues",
@@ -41,6 +48,7 @@
     "load-grunt-tasks": "^3.4.1",
     "mocha": "^2.5.3",
     "moment": "^2.13.0",
+    "rimraf": "^2.5.2",
     "shelljs": "^0.6.0",
     "tslint": "^3.9.0",
     "typescript": "^1.8.10"
