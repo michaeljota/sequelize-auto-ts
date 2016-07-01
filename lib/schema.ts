@@ -16,28 +16,28 @@ import util = require('./util');
 import api = require('./api');
 
 const DEFAULT_CASE_TYPE = 'pascalCase';
-var naming : any;
+var naming: any;
 
-class Schema implements api.ISchema {
+class TypeMapper {
 
-    public static idSuffix : string = "id"; // NOTE: Must be LOWER case
+    public static fieldTypeTranslations: api.IDictionary<string> = {}
+    public static fieldTypeSequelize: api.IDictionary<string> = {}
 
-    public references : api.IReference[] = [];
-    public xrefs : api.IXref[] = [];
-    public associations : api.IAssociation[] = [];
-    public calculatedFields : Array<api.IField> = [];
-    public views : api.ITable[] = [];
-    public idFields : api.IField[] = [];
-    public idFieldLookup : api.IDictionary<boolean> = {};
+    public static init(dialect: string) {
+        TypeMapper.fieldTypeTranslations = {};
+        (<any>TypeMapper.fieldTypeTranslations).concat(TypeMapper.fieldTypeTranslationsInternal);
+        TypeMapper.fieldTypeSequelize = {};
+        (<any>TypeMapper.fieldTypeSequelize).concat(TypeMapper.fieldTypeSequelizeInternal);
 
-    public useModelFactory : boolean = false;
-
-    constructor(public tables : Array<api.ITable>) {
-
+        switch (dialect) {
+            case 'mssql':
+                TypeMapper.fieldTypeTranslations["bit"] = "string";
+                TypeMapper.fieldTypeSequelize["bit"] = "Sequelize.STRING";
+                break;
+        }
     }
 
-    public static fieldTypeTranslations : api.IDictionary<string> = {
-
+    private static fieldTypeTranslationsInternal : api.IDictionary<string> = {
         tinyint : "boolean",
 
         boolean : "boolean",
@@ -90,8 +90,7 @@ class Schema implements api.ISchema {
         "uniqueidentifier" : "string"
     };
 
-    public static fieldTypeSequelize : api.IDictionary<string> = {
-
+    private static fieldTypeSequelizeInternal : api.IDictionary<string> = {
         tinyint : 'Sequelize.BOOLEAN',
 
         boolean : 'Sequelize.BOOLEAN',
@@ -144,6 +143,25 @@ class Schema implements api.ISchema {
         "USER-DEFINED": 'Sequelize.STRING',
         uniqueidentifier : 'Sequelize.STRING'
     };
+}
+
+class Schema implements api.ISchema {
+
+    public static idSuffix : string = "id"; // NOTE: Must be LOWER case
+
+    public references : api.IReference[] = [];
+    public xrefs : api.IXref[] = [];
+    public associations : api.IAssociation[] = [];
+    public calculatedFields : Array<api.IField> = [];
+    public views : api.ITable[] = [];
+    public idFields : api.IField[] = [];
+    public idFieldLookup : api.IDictionary<boolean> = {};
+
+    public useModelFactory : boolean = false;
+
+    constructor(public tables : Array<api.ITable>) {
+
+    }
 
     public uniqueReferences() : Reference[] {
         var u : Reference[] = [];
@@ -311,7 +329,7 @@ class Field implements api.IField {
 
     translatedFieldType() : string {
         var fieldType : string = this.fieldType;
-        var translated : string = Schema.fieldTypeTranslations[fieldType];
+        var translated: string = TypeMapper.fieldTypeTranslations[fieldType];
 
         if (translated == undefined) {
             var fieldTypeLength : number = fieldType.length;
@@ -333,7 +351,7 @@ class Field implements api.IField {
     }
 
     sequelizeFieldType() : string[] {
-        var translated : string = Schema.fieldTypeSequelize[this.fieldType];
+        var translated : string = TypeMapper.fieldTypeSequelize[this.fieldType];
         if (translated == undefined) {
             console.log('Unable to sequelize field type:' + this.fieldType);
             translated = this.fieldType;
@@ -521,7 +539,9 @@ export function read(database : string, username : string, password : string, op
     var xrefs : api.IDictionary<Xref> = {};
     var associationsFound : api.IDictionary<boolean> = {};
     var customReferenceRows : ReferenceDefinitionRow[] = [];
-    var idFieldLookup : api.IDictionary<boolean> = {};
+    var idFieldLookup: api.IDictionary<boolean> = {};
+
+    TypeMapper.init(options.dialect);
 
     var sql : string =
         "select table_name, column_name, is_nullable, data_type, column_type, column_default, ordinal_position " +
