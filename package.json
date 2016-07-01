@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "rimraf dist/ && tsc",
-    "prepublish": "npm install && typings install && npm run build"
+    "prepublish": "typings install && npm run build"
   },
   "homepage": "https://github.com/samuelneff/sequelize-auto-ts",
   "bugs": "https://github.com/samuelneff/sequelize-auto-ts/issues",
