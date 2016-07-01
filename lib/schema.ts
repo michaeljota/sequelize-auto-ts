@@ -25,9 +25,9 @@ class TypeMapper {
 
     public static init(dialect: string) {
         TypeMapper.fieldTypeTranslations = {};
-        (<any>TypeMapper.fieldTypeTranslations).concat(TypeMapper.fieldTypeTranslationsInternal);
+        TypeMapper.fieldTypeTranslations = JSON.parse(JSON.stringify(TypeMapper.fieldTypeTranslationsInternal));
         TypeMapper.fieldTypeSequelize = {};
-        (<any>TypeMapper.fieldTypeSequelize).concat(TypeMapper.fieldTypeSequelizeInternal);
+        TypeMapper.fieldTypeSequelize = JSON.parse(JSON.stringify(TypeMapper.fieldTypeSequelizeInternal));
 
         switch (dialect) {
             case 'mssql':
