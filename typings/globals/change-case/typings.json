@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/ddab41325d5dba4f6488d5b9a8b4dcb9d2b2b361/change-case/change-case.d.ts",
+    "raw": "registry:dt/change-case#0.0.0+20151116200427",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/ddab41325d5dba4f6488d5b9a8b4dcb9d2b2b361/change-case/change-case.d.ts"
+  }
+}
