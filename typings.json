@@ -15,6 +15,7 @@
     "bluebird": "registry:dt/bluebird#2.0.0+20160209044412",
     "chai": "registry:dt/chai#3.4.0+20160317120654",
     "change-case": "registry:dt/change-case#0.0.0+20151116200427",
+    "ejs": "registry:dt/ejs#0.0.0+20160317120654",
     "lodash": "registry:dt/lodash#3.10.0+20160314033737",
     "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "moment": "registry:dt/moment#2.8.0+20160316155526",
