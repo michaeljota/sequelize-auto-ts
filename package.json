@@ -3,12 +3,11 @@
   "version": "2.9.1",
   "author": "Samuel Neff <sam@serndesign.com> https://github.com/samuelneff",
   "description": "Generates Sequelize definition statements and TypeScript interfaces for tables in a database.",
-  "main": "dist/cli.js",
+  "main": "lib/cli.js",
   "bin": {
-    "sequelize-auto-ts": "dist/cli.js"
+    "sequelize-auto-ts": "lib/cli.js"
   },
   "files": [
-    "dist/",
     "lib/",
     "index.ts"
   ],

@@ -408,7 +408,7 @@ $ npm run build
 run the generator
 
 ```Shell
-$ node node_modules/sequelize-auto-ts/lib/cli.js
+$ node_modules/.bin/sequelize-auto-ts (or on windows: node_modules\.bin\sequelize-auto-ts.cmd)
 sequelize-auto-ts
 
 Automatically generate sequelize definition statements and TypeScript types for your database.
