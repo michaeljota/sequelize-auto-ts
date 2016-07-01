@@ -3,7 +3,7 @@
 
 import fs = require("fs");
 import path = require("path");
-var ScriptTemplate = require("script-template");
+import * as ejs from 'ejs';
 
 import api = require("./../../api");
 import {BaseGenerator} from "./../BaseGenerator";
@@ -15,10 +15,10 @@ export class Generator extends BaseGenerator {
             return;
 
         var self = this;
-        self.generateFromTemplate(options, schema, "templates/sequelize-entities.ts.tpl", function (err : Error) {
-            self.generateFromTemplate(options, schema, "templates/sequelize-types.ts.tpl", function (err : Error) {
-                self.generateFromTemplate(options, schema, "templates/sequelize-names.ts.tpl", function (err : Error) {
-                    var template : string = options.modelFactory ? "templates/sequelize-model-factory.ts.tpl" : "templates/sequelize-models.ts.tpl";
+        self.generateFromTemplate(options, schema, "templates/sequelize-entities.ts.ejs", function (err : Error) {
+            self.generateFromTemplate(options, schema, "templates/sequelize-types.ts.ejs", function (err : Error) {
+                self.generateFromTemplate(options, schema, "templates/sequelize-names.ts.ejs", function (err : Error) {
+                    var template : string = options.modelFactory ? "templates/sequelize-model-factory.ts.ejs" : "templates/sequelize-models.ts.ejs";
                     self.generateFromTemplate(options, schema, template, callback);
                 });
             });
@@ -28,16 +28,20 @@ export class Generator extends BaseGenerator {
     private generateFromTemplate(options : api.IGenerateOptions, schema : api.ISchema, templateName : string, callback : (err : Error) => void) : void {
         console.log("Generating " + templateName);
 
-        var templateText : string = fs.readFileSync(path.join(__dirname, templateName), "utf8");
+        var opt = null;
+        var data = { schema: schema };
+        var templatePath: string = path.join(__dirname, templateName);
 
-        var engine = new ScriptTemplate(templateText);
-        var genText : string = engine.run(schema);
+        var self = this;
+        ejs.renderFile(templatePath, data, opt, function(err, str){
+            var genText : string = str;
 
-        genText = this.translateReferences(genText, options);
+            genText = self.translateReferences(genText, options);
 
-        var baseName = path.basename(templateName, ".tpl");
-        fs.writeFileSync(path.join(options.targetDirectory, baseName), genText);
+            var baseName = path.basename(templateName, ".ejs");
+            fs.writeFileSync(path.join(options.targetDirectory, baseName), genText);
 
-        callback(null);
+            callback(null);
+        });
     }
 }
