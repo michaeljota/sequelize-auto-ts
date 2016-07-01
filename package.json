@@ -4,7 +4,7 @@
   "author": "Samuel Neff <sam@serndesign.com> https://github.com/samuelneff",
   "description": "Generates Sequelize definition statements and TypeScript interfaces for tables in a database.",
   "main": "dist/cli.js",
-  "xxxbin": {
+  "bin": {
     "sequelize-auto-ts": "dist/cli.js"
   },
   "files": [
@@ -19,8 +19,8 @@
     "typescript"
   ],
   "scripts": {
-    "build": "rimraf dist/ && tsc",
-    "xxxprepublish": "npm run build"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "homepage": "https://github.com/samuelneff/sequelize-auto-ts",
   "bugs": "https://github.com/samuelneff/sequelize-auto-ts/issues",
