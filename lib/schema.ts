@@ -59,6 +59,7 @@ class Schema implements api.ISchema {
         timestamp : "Date",
         date : "Date",
         datetime : "Date",
+        datetime2 : "Date",
 
         tinyblob : "Buffer",
         mediumblob : "Buffer",
@@ -85,7 +86,8 @@ class Schema implements api.ISchema {
         time : "string",
         geometry : "string",
         "character varying" : "string",
-        "USER-DEFINED" : "string"
+        "USER-DEFINED" : "string",
+        "uniqueidentifier" : "string"
     };
 
     public static fieldTypeSequelize : api.IDictionary<string> = {
@@ -112,6 +114,7 @@ class Schema implements api.ISchema {
         timestamp : 'Sequelize.DATE',
         date : 'Sequelize.DATE',
         datetime : 'Sequelize.DATE',
+        datetime2 : 'Sequelize.DATE',
 
         tinyblob : 'Sequelize.BLOB',
         mediumblob : 'Sequelize.BLOB',
@@ -138,7 +141,8 @@ class Schema implements api.ISchema {
         geometry : 'Sequelize.STRING',
         "character varying" : 'Sequelize.STRING',
         character : 'Sequelize.STRING',
-        "USER-DEFINED" : 'Sequelize.STRING'
+        "USER-DEFINED": 'Sequelize.STRING',
+        uniqueidentifier : 'Sequelize.STRING'
     };
 
     public uniqueReferences() : Reference[] {
