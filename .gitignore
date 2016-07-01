@@ -7,7 +7,7 @@ typings
 pids
 *.pid
 *.seed
-dist
+#dist
 gentest.js
 gentest.js.map
 
