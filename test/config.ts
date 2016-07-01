@@ -1,5 +1,7 @@
-var path = require('path');
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
 
+var path = require('path');
 // copy this file to config.local.ts and apply any modifications
 
 module.exports = {

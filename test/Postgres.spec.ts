@@ -1,4 +1,5 @@
-///<reference path="../typings/index.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
 
 import * as moment from "moment";
 import {assert} from "chai";

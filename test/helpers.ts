@@ -1,4 +1,5 @@
-///<reference path="../typings/index.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
 
 export function AsyncDone (fn) {
     let self = this;

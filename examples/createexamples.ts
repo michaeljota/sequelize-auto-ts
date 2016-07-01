@@ -1,4 +1,5 @@
-///<reference path="../typings/index.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
+'use strict';
 
 var config = require('./config.js');
 try { config = require('./config.local.js'); } catch (ex) { }
