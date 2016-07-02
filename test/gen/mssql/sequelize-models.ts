@@ -290,7 +290,7 @@ export function initialize(database:string, username:string, password:string, op
         'UnitsInStock': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
         'UnitsOnOrder': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
         'ReorderLevel': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
-        'Discontinued': {type: Sequelize.BLOB, allowNull: false, defaultValue: undefined}
+        'Discontinued': {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: undefined}
         },
         {
             classMethods: {
@@ -376,7 +376,7 @@ export function initialize(database:string, username:string, password:string, op
         'UnitsInStock': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
         'UnitsOnOrder': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
         'ReorderLevel': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
-        'Discontinued': {type: Sequelize.BLOB, allowNull: false, defaultValue: undefined},
+        'Discontinued': {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: undefined},
         'CategoryName': {type: Sequelize.STRING, allowNull: false, defaultValue: undefined}
         },
         {
@@ -505,7 +505,7 @@ export function initialize(database:string, username:string, password:string, op
         'ProductName': {type: Sequelize.STRING, allowNull: false, defaultValue: undefined},
         'QuantityPerUnit': {type: Sequelize.STRING, allowNull: false, defaultValue: undefined},
         'UnitsInStock': {type: Sequelize.INTEGER, allowNull: false, defaultValue: undefined},
-        'Discontinued': {type: Sequelize.BLOB, allowNull: false, defaultValue: undefined}
+        'Discontinued': {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: undefined}
         },
         {
             classMethods: {

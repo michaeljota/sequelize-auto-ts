@@ -15,9 +15,9 @@ export class Generator extends BaseGenerator {
             return;
 
         var self = this;
-        self.generateFromTemplate(options, schema, "templates/sequelize-types.ts.ejs", function (err : Error) {
-            self.generateFromTemplate(options, schema, "templates/sequelize-names.ts.ejs", function (err : Error) {
-                var template : string = options.modelFactory ? "templates/sequelize-model-factory.ts.ejs" : "templates/sequelize-models.ts.ejs";
+        self.generateFromTemplate(options, schema, "sequelize-types.ts.ejs", function (err : Error) {
+            self.generateFromTemplate(options, schema, "sequelize-names.ts.ejs", function (err : Error) {
+                var template : string = options.modelFactory ? "sequelize-model-factory.ts.ejs" : "sequelize-models.ts.ejs";
                 self.generateFromTemplate(options, schema, template, callback);
             });
         });
@@ -27,8 +27,10 @@ export class Generator extends BaseGenerator {
         console.log("Generating " + templateName);
 
         var opt = null;
-        var data = { schema: schema };
-        var templatePath: string = path.join(__dirname, templateName);
+        var data = { schema: schema, options: options.generatorOptions };
+        var dir = this.getTemplateDir(options, __dirname);
+
+        var templatePath: string = path.join(dir, templateName);
 
         var self = this;
         ejs.renderFile(templatePath, data, opt, function(err, str){

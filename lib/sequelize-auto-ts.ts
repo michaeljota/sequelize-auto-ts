@@ -5,6 +5,7 @@ import path = require("path");
 import fs = require("fs");
 import api = require("./api");
 import schema = require("./schema");
+import util = require("./util");
 
 export function generate(options : api.IGenerateOptions, callback? : (err : Error) => void) : void {
     var generator: api.IGenerator = null;
@@ -16,11 +17,11 @@ export function generate(options : api.IGenerateOptions, callback? : (err : Erro
         };
     }
 
-    if (isNullOrWhiteSpace(options.generatorPath)) {
+    if (util.isNullOrWhiteSpace(options.generatorPath)) {
         generatorPath = path.join(__dirname, 'generator');
     }
 
-    if (isNullOrWhiteSpace(options.generatorName)) {
+    if (util.isNullOrWhiteSpace(options.generatorName)) {
         generatorName = "default";
     }
 
@@ -45,8 +46,4 @@ export function generate(options : api.IGenerateOptions, callback? : (err : Erro
             schema.useModelFactory = options.modelFactory;
             generator.generateTypes(options, schema, callback);
         });
-}
-
-function isNullOrWhiteSpace(str){
-    return str == null || str.replace(/\s/g, '').length < 1;
 }

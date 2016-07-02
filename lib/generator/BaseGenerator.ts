@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
+import util = require("./../util");
 import api = require("./../api");
 
 export abstract class BaseGenerator implements api.IGenerator {
@@ -52,6 +53,20 @@ export abstract class BaseGenerator implements api.IGenerator {
         }
 
         return source.replace(re, replaceFileName);
+    }
+
+    protected getTemplateDir(options: api.IGenerateOptions, baseDir: string): string {
+        var dir = options.generatorTemplatePath;
+
+        if (!util.isNullOrWhiteSpace(dir)) {
+            if (!fs.existsSync(dir)) {
+                dir = path.join(process.cwd(), dir);
+            }
+        } else {
+            dir = path.join(baseDir,"templates");
+        }
+
+        return dir;
     }
 
     private findTargetProjectRootDirectory(options : api.IGenerateOptions) : string {

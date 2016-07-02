@@ -31,3 +31,7 @@ export function arrayToDictionary<T>(array : T[], key : any) : api.IDictionary<T
 
     return d;
 }
+
+export function isNullOrWhiteSpace(str) {
+    return str == undefined || str == null || str.replace(/\s/g, '').length < 1;
+}

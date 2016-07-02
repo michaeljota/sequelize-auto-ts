@@ -104,6 +104,8 @@ export interface IGenerateOptions {
     targetDirectory: string;
     generatorName?: string;
     generatorPath?: string;
+    generatorTemplatePath?: string;
+    generatorOptions?: any;
 }
 
 export interface IGenerator {

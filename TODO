@@ -1,0 +1,10 @@
+* tidy up schema: separater readers for all 4 databases, add type mappers for all databases
+* enhance the CLI (better parameter parser, after the interactive parser add a save option)
+* check how prepare/prepublish in package.json works - we can get rid of the js/.js.map files
+* enhance the symbol table e.g. extract comments, domain types (mssql)
+* investigate if the sequelize schema reader can be used
+* parameterize the generators (code generation, filenames, separate entities, location, etc.)
+* parse unique index
+* better handling of cross reference (aka n:m relations). The current implementation assumes a "Xref" tag in the table name.
+* bug: make combied primiary keys
+* bug: correct type of the PK - don't assume number

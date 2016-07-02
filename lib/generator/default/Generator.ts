@@ -15,9 +15,9 @@ export class Generator extends BaseGenerator {
             return;
 
         var self = this;
-        self.generateFromTemplate(options, schema, "templates/sequelize-types.ts.tpl", function (err : Error) {
-            self.generateFromTemplate(options, schema, "templates/sequelize-names.ts.tpl", function (err : Error) {
-                var template : string = options.modelFactory ? "templates/sequelize-model-factory.ts.tpl" : "templates/sequelize-models.ts.tpl";
+        self.generateFromTemplate(options, schema, "sequelize-types.ts.tpl", function (err : Error) {
+            self.generateFromTemplate(options, schema, "sequelize-names.ts.tpl", function (err : Error) {
+                var template : string = options.modelFactory ? "sequelize-model-factory.ts.tpl" : "sequelize-models.ts.tpl";
                 self.generateFromTemplate(options, schema, template, callback);
             });
         });
@@ -26,7 +26,8 @@ export class Generator extends BaseGenerator {
     private generateFromTemplate(options : api.IGenerateOptions, schema : api.ISchema, templateName : string, callback : (err : Error) => void) : void {
         console.log("Generating " + templateName);
 
-        var templateText : string = fs.readFileSync(path.join(__dirname, templateName), "utf8");
+        var dir = this.getTemplateDir(options, __dirname);
+        var templateText : string = fs.readFileSync(path.join(dir, templateName), "utf8");
 
         var engine = new ScriptTemplate(templateText);
         var genText : string = engine.run(schema);

@@ -437,7 +437,7 @@ export interface ProductsPojo
     UnitsInStock:number;
     UnitsOnOrder:number;
     ReorderLevel:number;
-    Discontinued:Buffer;
+    Discontinued:boolean;
 }
 
 export interface ProductsInstance extends sequelize.Instance<ProductsPojo>, ProductsPojo { }
@@ -469,7 +469,7 @@ export function AssertValidProducts(pojo:ProductsPojo, allowUndefined?:boolean):
             case 'UnitsInStock': assertValidFieldType('Product', 'UnitsInStock', pojo, 'number'); break;
             case 'UnitsOnOrder': assertValidFieldType('Product', 'UnitsOnOrder', pojo, 'number'); break;
             case 'ReorderLevel': assertValidFieldType('Product', 'ReorderLevel', pojo, 'number'); break;
-            case 'Discontinued': assertValidFieldType('Product', 'Discontinued', pojo, 'Buffer'); break;
+            case 'Discontinued': assertValidFieldType('Product', 'Discontinued', pojo, 'boolean'); break;
             default:
                 throw new Error('Invalid Product provided. Field \'' + fieldNames[i] + '\' is not supported.')
         }
@@ -607,7 +607,7 @@ export interface AlphabeticalListOfProductsPojo
     UnitsInStock:number;
     UnitsOnOrder:number;
     ReorderLevel:number;
-    Discontinued:Buffer;
+    Discontinued:boolean;
     CategoryName:string;
 }
 
@@ -640,7 +640,7 @@ export function AssertValidAlphabeticalListOfProducts(pojo:AlphabeticalListOfPro
             case 'UnitsInStock': assertValidFieldType('Alphabetical list of product', 'UnitsInStock', pojo, 'number'); break;
             case 'UnitsOnOrder': assertValidFieldType('Alphabetical list of product', 'UnitsOnOrder', pojo, 'number'); break;
             case 'ReorderLevel': assertValidFieldType('Alphabetical list of product', 'ReorderLevel', pojo, 'number'); break;
-            case 'Discontinued': assertValidFieldType('Alphabetical list of product', 'Discontinued', pojo, 'Buffer'); break;
+            case 'Discontinued': assertValidFieldType('Alphabetical list of product', 'Discontinued', pojo, 'boolean'); break;
             case 'CategoryName': assertValidFieldType('Alphabetical list of product', 'CategoryName', pojo, 'string'); break;
             default:
                 throw new Error('Invalid Alphabetical list of product provided. Field \'' + fieldNames[i] + '\' is not supported.')
@@ -848,7 +848,7 @@ export interface ProductsByCategoryPojo
     ProductName:string;
     QuantityPerUnit:string;
     UnitsInStock:number;
-    Discontinued:Buffer;
+    Discontinued:boolean;
 }
 
 export interface ProductsByCategoryInstance extends sequelize.Instance<ProductsByCategoryPojo>, ProductsByCategoryPojo { }
@@ -875,7 +875,7 @@ export function AssertValidProductsByCategory(pojo:ProductsByCategoryPojo, allow
             case 'ProductName': assertValidFieldType('Products by Category', 'ProductName', pojo, 'string'); break;
             case 'QuantityPerUnit': assertValidFieldType('Products by Category', 'QuantityPerUnit', pojo, 'string'); break;
             case 'UnitsInStock': assertValidFieldType('Products by Category', 'UnitsInStock', pojo, 'number'); break;
-            case 'Discontinued': assertValidFieldType('Products by Category', 'Discontinued', pojo, 'Buffer'); break;
+            case 'Discontinued': assertValidFieldType('Products by Category', 'Discontinued', pojo, 'boolean'); break;
             default:
                 throw new Error('Invalid Products by Category provided. Field \'' + fieldNames[i] + '\' is not supported.')
         }
