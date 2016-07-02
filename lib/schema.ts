@@ -141,7 +141,7 @@ class TypeMapper {
         "character varying" : 'Sequelize.STRING',
         character : 'Sequelize.STRING',
         "USER-DEFINED": 'Sequelize.STRING',
-        uniqueidentifier : 'Sequelize.STRING'
+        uniqueidentifier : 'Sequelize.UUID'
     };
 }
 
