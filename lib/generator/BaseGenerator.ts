@@ -29,11 +29,11 @@ export abstract class BaseGenerator implements api.IGenerator {
     }
 
     protected translateReferences(source : string, options : api.IGenerateOptions) : string {
-        var re : RegExp = new RegExp("///\\s+<reference\\s+path=[\"'][\\./\\w\\-\\d]+?([\\w\\.\\-]+)[\"']\\s*/>", "g");
+        var re : RegExp = new RegExp("///\\s+<reference\\s+path=[\"']([\\./\\w\\-\\d]+?[\\w\\.\\-]+)[\"']\\s*/>", "g");
 
         var self = this;
-        function replaceFileName(match : string, fileName : string) : string {
-            var targetPath : string = self.findTargetPath(fileName, self.getTargetProjectRootDirectory());
+        function replaceFileName(match: string, fileName: string): string {
+            var targetPath: string = self.findTargetPath(fileName, self.getTargetProjectRootDirectory());
 
             var relativePath : string = targetPath == null
                 ? null
