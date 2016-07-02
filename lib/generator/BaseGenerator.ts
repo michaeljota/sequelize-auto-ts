@@ -95,15 +95,23 @@ export abstract class BaseGenerator implements api.IGenerator {
             return target;
         }
 
+        targetDirectory = path.normalize(targetDirectory);
+        projectDirectory = path.normalize(projectDirectory);
+
         var dir = targetDirectory;
         var dirRelative = "./";
-        while (dir != projectDirectory || dir != null || dir != ""){
+
+        while (true) {
             var file = path.join(dir, fileName);
             if (fs.existsSync(file)) {
                 return path.join(dirRelative, fileName);
             }
+
             dir = path.resolve(path.join(dir, ".."));
             dirRelative += "../";
+
+            if (dir.length < projectDirectory.length)
+                break;
         }
 
         return null;
