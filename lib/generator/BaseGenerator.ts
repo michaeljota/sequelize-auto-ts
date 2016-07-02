@@ -33,11 +33,11 @@ export abstract class BaseGenerator implements api.IGenerator {
 
         var self = this;
         function replaceFileName(match: string, fileName: string): string {
-            var targetPath: string = self.findTargetPath(fileName, self.getTargetProjectRootDirectory());
-
+            fileName = fileName.replace(/\.\.\//g, '').replace(/\.\//g, '');
+            var targetPath: string = self.findRelativeTargetPath(fileName, options.targetDirectory, self.getTargetProjectRootDirectory());
             var relativePath : string = targetPath == null
                 ? null
-                : path.relative(options.targetDirectory, targetPath);
+                : targetPath;
 
             if (relativePath == null) {
                 var sourceText : string = fs.readFileSync(path.join(__dirname, fileName), "utf8");
@@ -89,26 +89,23 @@ export abstract class BaseGenerator implements api.IGenerator {
         return (files.indexOf(file) >= 0);
     }
 
-    private findTargetPath(fileName : string, searchDirectory : string) : string {
-        var target : string = path.join(searchDirectory, fileName);
+    private findRelativeTargetPath(fileName: string, targetDirectory: string, projectDirectory: string): string {
+        var target : string = path.join(targetDirectory, fileName);
         if (fs.existsSync(target)) {
             return target;
         }
 
-        var childDirectories : string[] = fs.readdirSync(searchDirectory);
-        for (var i = 0; i < childDirectories.length; i++) {
-            var childName : string = childDirectories[i];
-            var childPath : string = path.join(searchDirectory, childName);
-
-            var stat = fs.statSync(childPath);
-
-            if (stat.isDirectory() && childName.charAt(0) != '.' && childName != 'node_modules') {
-                target = this.findTargetPath(fileName, childPath);
-                if (target != null) {
-                    return target;
-                }
+        var dir = targetDirectory;
+        var dirRelative = "./";
+        while (dir != projectDirectory || dir != null || dir != ""){
+            var file = path.join(dir, fileName);
+            if (fs.existsSync(file)) {
+                return path.join(dirRelative, fileName);
             }
+            dir = path.resolve(path.join(dir, ".."));
+            dirRelative += "../";
         }
+
         return null;
     }
 
