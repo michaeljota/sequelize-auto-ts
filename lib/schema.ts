@@ -15,497 +15,17 @@ import ChangeCase = require('change-case');
 import util = require('./util');
 import api = require('./api');
 
+import {Association} from './symboltable/Association';
+import {Field} from './symboltable/Field';
+import {Reference} from './symboltable/Reference';
+import {Schema} from './symboltable/Schema';
+import {Table} from './symboltable/Table';
+import {TypeMapper} from './symboltable/TypeMapper';
+import {Xref} from './symboltable/Xref';
+
 const DEFAULT_CASE_TYPE = 'pascalCase';
 var naming: any;
 
-class TypeMapper {
-
-    public static fieldTypeTranslations: api.IDictionary<string> = {}
-    public static fieldTypeSequelize: api.IDictionary<string> = {}
-
-    public static init(dialect: string) {
-        TypeMapper.fieldTypeTranslations = {};
-        TypeMapper.fieldTypeTranslations = JSON.parse(JSON.stringify(TypeMapper.fieldTypeTranslationsInternal));
-        TypeMapper.fieldTypeSequelize = {};
-        TypeMapper.fieldTypeSequelize = JSON.parse(JSON.stringify(TypeMapper.fieldTypeSequelizeInternal));
-
-        switch (dialect) {
-            case 'mssql':
-                TypeMapper.fieldTypeTranslations["bit"] = "boolean";
-                TypeMapper.fieldTypeSequelize["bit"] = "Sequelize.BOOLEAN";
-                break;
-        }
-    }
-
-    private static fieldTypeTranslationsInternal : api.IDictionary<string> = {
-        tinyint : "boolean",
-
-        boolean : "boolean",
-
-        smallint : "number",
-        int : "number",
-        integer : "number",
-        mediumint : "number",
-        bigint : "number",
-        year : "number",
-        float : "number",
-        double : "number",
-        decimal : "number",
-        "double precision" : "number",
-        real : "number",
-        numeric: "number",
-        money : "number",
-
-        timestamp : "Date",
-        date : "Date",
-        datetime : "Date",
-        datetime2 : "Date",
-
-        tinyblob : "Buffer",
-        mediumblob : "Buffer",
-        longblob : "Buffer",
-        blob: "Buffer",
-        image : "Buffer",
-        binary : "Buffer",
-        varbinary : "Buffer",
-        bit : "Buffer",
-        bytea : "Buffer",
-
-        char: "string",
-        nchar : "string",
-        character : "string",
-        varchar: "string",
-        nvarchar : "string",
-        tinytext : "string",
-        mediumtext : "string",
-        longtext : "string",
-        text: "string",
-        ntext: "string",
-        "enum" : "string",
-        "set" : "string",
-        time : "string",
-        geometry : "string",
-        "character varying" : "string",
-        "USER-DEFINED" : "string",
-        "uniqueidentifier" : "string"
-    };
-
-    private static fieldTypeSequelizeInternal : api.IDictionary<string> = {
-        tinyint : 'Sequelize.BOOLEAN',
-
-        boolean : 'Sequelize.BOOLEAN',
-
-        smallint : 'Sequelize.INTEGER',
-        int : 'Sequelize.INTEGER',
-        integer : 'Sequelize.INTEGER',
-        mediumint : 'Sequelize.INTEGER',
-        bigint : 'Sequelize.INTEGER',
-        year : 'Sequelize.INTEGER',
-
-        float : 'Sequelize.DECIMAL',
-        double : 'Sequelize.DECIMAL',
-        decimal : 'Sequelize.DECIMAL',
-        "double precision" : 'Sequelize.DECIMAL',
-        real : 'Sequelize.DECIMAL',
-        numeric: 'Sequelize.DECIMAL',
-        money : 'Sequelize.DECIMAL',
-
-        timestamp : 'Sequelize.DATE',
-        date : 'Sequelize.DATE',
-        datetime : 'Sequelize.DATE',
-        datetime2 : 'Sequelize.DATE',
-
-        tinyblob : 'Sequelize.BLOB',
-        mediumblob : 'Sequelize.BLOB',
-        longblob : 'Sequelize.BLOB',
-        blob: 'Sequelize.BLOB',
-        image : 'Sequelize.BLOB',
-        binary : 'Sequelize.BLOB',
-        varbinary : 'Sequelize.BLOB',
-        bit : 'Sequelize.BLOB',
-        bytea : 'Sequelize.BLOB',
-
-        char: 'Sequelize.STRING',
-        nchar : 'Sequelize.STRING',
-        varchar: 'Sequelize.STRING',
-        nvarchar : 'Sequelize.STRING',
-        tinytext : 'Sequelize.STRING',
-        mediumtext : 'Sequelize.STRING',
-        longtext : 'Sequelize.STRING',
-        text: 'Sequelize.STRING',
-        ntext : 'Sequelize.STRING',
-        "enum" : 'Sequelize.ENUM',
-        "set" : 'Sequelize.STRING',
-        time : 'Sequelize.STRING',
-        geometry : 'Sequelize.STRING',
-        "character varying" : 'Sequelize.STRING',
-        character : 'Sequelize.STRING',
-        "USER-DEFINED": 'Sequelize.STRING',
-        uniqueidentifier : 'Sequelize.UUID'
-    };
-}
-
-class Schema implements api.ISchema {
-
-    public static idSuffix : string = "id"; // NOTE: Must be LOWER case
-
-    public references : api.IReference[] = [];
-    public xrefs : api.IXref[] = [];
-    public associations : api.IAssociation[] = [];
-    public calculatedFields : Array<api.IField> = [];
-    public views : api.ITable[] = [];
-    public idFields : api.IField[] = [];
-    public idFieldLookup : api.IDictionary<boolean> = {};
-
-    public useModelFactory : boolean = false;
-
-    constructor(public tables : Array<api.ITable>) {
-
-    }
-
-    public uniqueReferences() : Reference[] {
-        var u : Reference[] = [];
-
-        var foundIds : api.IDictionary<boolean> = {};
-
-        this.references.forEach(addReferenceIfUnique);
-
-        this.tables.forEach(addTablePrimaryKeys);
-
-        return u;
-
-        function addReferenceIfUnique(reference : Reference, index : number, array : Reference[]) : void {
-            if (reference.isView || foundIds[reference.foreignKey]) {
-                return;
-            }
-
-            u.push(reference);
-
-            foundIds[reference.foreignKey] = true;
-        }
-
-        function addTablePrimaryKeys(table : Table, index : number, array : Table[]) : void {
-            if (table.isView || table.tableName.substr(0, 4) === 'Xref') {
-                return;
-            }
-            var pk : api.IField = table.fields[0];
-
-            if (foundIds[pk.fieldName]) {
-                return;
-            }
-            foundIds[pk.fieldName] = true;
-
-            var r : Reference = new Reference(table.tableName,
-                table.tableName,
-                undefined,
-                pk.fieldName,
-                pk.fieldName,
-                false,
-                this);
-            u.push(r);
-        }
-    }
-}
-
-class Table implements api.ITable {
-    fields: Array<api.IField> = [];
-    columns: Array<api.IField> = [];
-    refs: Array<api.IField> = [];
-    isView: boolean = false;
-
-    constructor(public schema : api.ISchema, public tableName : string) {
-
-    }
-
-    entityName() : string {
-        var name : string = ChangeCase.snake(this.tableName);
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    pojoName() : string {
-        var name : string = ChangeCase.snake(this.tableName) + '_pojo';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    instanceTypeName() : string {
-        var name : string = ChangeCase.snake(this.tableName) + '_instance';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    modelTypeName() : string {
-        var name : string = ChangeCase.snake(this.tableName) + '_model';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    assertValidMethodName() : string {
-        var name : string = 'assert_valid_' + ChangeCase.snake(this.tableName);
-        var type : string = _.has(naming, 'naming.methodName') ? naming.methodName.caseType : naming.defaults.caseType;
-        return ChangeCase[type](name);
-    }
-
-    getterName() : string {
-        var name : string = 'get_' + ChangeCase.snake(this.tableName);
-        var type : string = _.has(naming, 'getterName.caseType') ? naming.getterName.caseType : naming.defaults.caseType;
-        return ChangeCase[type](name);
-    }
-
-    public tableNameSingular() : string {
-        return Sequelize.Utils.singularize(this.tableName);
-    }
-
-    public tableNameSingularCamel(): string {
-        return ChangeCase.snake(this.tableNameSingular());
-    }
-
-    public tableNamePascal() : string {
-        return ChangeCase.pascal(this.tableName);
-    }
-
-    public tableNameCamel() : string {
-        return ChangeCase.camel(this.tableName);
-    }
-
-    public tableNameModelSnake() : string {
-        return this.tableNameModel().replace(/\s/g,"_");
-    }
-
-    public tableNameModel() : string {
-        return this.schema.useModelFactory ? this.tableNameCamel() : this.tableName;
-    }
-
-    public realDbFields() : api.IField[] {
-        return this.fields.filter(f => !f.isReference && !f.isCalculated);
-    }
-
-    idField() : api.IField {
-        return _.find(this.fields, f => f.isIdField());
-    }
-
-    idFieldName() : string {
-        var idField : api.IField = this.idField();
-        if (idField === undefined) {
-            // console.log('Unable to find ID field for type: ' + this.tableName);
-            return '!!cannotFindIdFieldOn' + this.tableName + '!!';
-        }
-        return idField.fieldName;
-    }
-
-    idFieldNameTitleCase() : string {
-        var idField : api.IField = this.idField();
-        if (idField === undefined) {
-            // console.log('Unable to find ID field for type: ' + this.tableName);
-            return '!!cannotFindIdFieldOn' + this.tableName + '!!';
-        }
-        return idField.fieldNameProperCase();
-    }
-}
-
-class Field implements api.IField {
-    public targetIdFieldType : string; // if this is a prefixed foreign key, then the name of the non-prefixed key is here
-
-    constructor(public fieldName : string, public fieldType : string, public columnType : string, public columnDefault : string, public isNullableString : string, public table : Table, public isReference : boolean = false, public isCalculated : boolean = false) {
-       ;
-    }
-
-    isNullable() : boolean {
-        return this.isNullableString === 'YES';
-    }
-
-    fieldNameAndIsNullable() : string {
-        var isNullable : boolean = (
-            this.isNullable() ||
-            /(_at)|(At)$/.test(this.fieldName) ||
-            (!_.isNull(this.columnDefault) && !_.isUndefined(this.columnDefault)) ||
-            this.fieldName === 'id' ||
-            this.isReference
-        );
-        return this.fieldName + (isNullable ? '?' : '');
-    }
-
-    fieldNameProperCase() : string {
-        var fieldName : string = ChangeCase[naming.defaults.caseType](this.fieldName);
-        return fieldName;
-    }
-
-    translatedFieldType() : string {
-        var fieldType : string = this.fieldType;
-        var translated: string = TypeMapper.fieldTypeTranslations[fieldType];
-
-        if (translated == undefined) {
-            var fieldTypeLength : number = fieldType.length;
-            if (fieldTypeLength < 6 ||
-                (   fieldType.substr(fieldTypeLength - 4, 4) !== 'Pojo' &&
-                fieldType.substr(fieldTypeLength - 6, 6) !== 'Pojo[]')
-            ) {
-                console.log('Unable to translate field type: ' + fieldType);
-            }
-
-            if (fieldType.substr(0, 6) === 'types.') {
-                console.log('Removing types prefix from ' + fieldType);
-                translated = fieldType.substr(6);
-            } else {
-                translated = fieldType;
-            }
-        }
-        return translated;
-    }
-
-    sequelizeFieldType() : string[] {
-        var translated : string = TypeMapper.fieldTypeSequelize[this.fieldType];
-        if (translated == undefined) {
-            console.log('Unable to sequelize field type:' + this.fieldType);
-            translated = this.fieldType;
-        }
-        if (this.fieldType === 'enum') {
-            translated += this.columnType.slice(4).replace(/'/g, '"').replace(/""/g, "'");
-        }
-        return [`type: ${translated}`];
-    }
-
-    isIdField() : boolean {
-        return this.targetIdFieldType != undefined || Boolean(this.table.schema.idFieldLookup[this.fieldName]);
-    }
-
-    customFieldType() : string {
-        if (this.isIdField()) {
-            if (this.targetIdFieldType == undefined) {
-                return this.fieldNameProperCase();
-            } else {
-                return this.targetIdFieldType;
-            }
-        } else if (this.isReference) {
-            return this.fieldType;
-        } else {
-            return this.translatedFieldType();
-        }
-    }
-
-    defineFieldType() : string {
-        var fieldType : string[] = [];
-        if (this == this.table.fields[0]) {
-            fieldType = [
-                'type: Sequelize.INTEGER',
-                'primaryKey: true',
-                'autoIncrement: true'
-            ];
-        } else if (this.table.tableName.substr(0, 4) == 'Xref' && this == this.table.fields[1]) {
-            fieldType = [
-                'type: "number"',
-                'primaryKey: true'
-            ];
-        } else {
-            fieldType = this.sequelizeFieldType();
-            if (!this.isNullable() && !/(_at)|(At)$/.test(this.fieldName)) {
-                fieldType.push('allowNull: false');
-            }
-            if (!_.isNull(this.columnDefault)) {
-                fieldType.push('defaultValue: ' + this.generateDefaultValue());
-            }
-        }
-        return '{' + fieldType.join(', ') + '}';
-    }
-
-    private generateDefaultValue() : string {
-        var raw = this.columnDefault;
-        if (this.fieldType === 'tinyint') {
-            raw = (raw === '1') ? 'true' : 'false';
-        } else if (_.isString(raw) && !/^[1-9][0-9]*$/.test(raw)) {
-            raw = `"${raw}"`;
-        }
-        return raw;
-    }
-
-    public tableNameSingular() : string {
-        return this.table.tableNameSingular();
-    }
-
-    public tableNameSingularCamel() : string {
-        return this.table.tableNameSingularCamel();
-    }
-}
-
-class Reference implements api.IReference {
-
-    constructor(public primaryTableName : string,
-                public foreignTableName : string,
-                public associationName : string,
-                public primaryKey : string,
-                public foreignKey : string,
-                public isView : boolean,
-                public schema : api.ISchema) {
-
-    }
-
-    public primaryTableModelName() : string {
-        var name : string = ChangeCase.snake(this.primaryTableName) + '_model';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    public foreignTableModelName() : string {
-        var name : string = ChangeCase.snake(this.foreignTableName) + '_model';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    public primaryTableNameCamel() : string {
-        //return toCamelCase(this.primaryTableName);
-        return ChangeCase.camel(this.primaryTableName);
-    }
-
-    public primaryTableNameModel() : string {
-        if (!this.schema) {
-            return this.primaryTableName
-        } else {
-            return this.schema.useModelFactory ? this.primaryTableNameCamel() : this.primaryTableName;
-        }
-    }
-
-    public foreignTableNameCamel() : string {
-        //return toCamelCase(this.foreignTableName);
-        return ChangeCase.camel(this.foreignTableName);
-    }
-
-    associationNameQuoted() : string {
-        return this.associationName
-            ? '\'' + this.associationName + '\''
-            : undefined;
-    }
-}
-
-class Xref implements api.IXref {
-
-    constructor(public firstTableName : string,
-                public firstFieldName : string,
-                public secondTableName : string,
-                public secondFieldName : string,
-                public xrefTableName : string) {
-
-    }
-
-    public firstTableModelName() : string {
-        var name : string = ChangeCase.snake(this.firstTableName) + '_model';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    public secondTableModelName() : string {
-        var name : string = ChangeCase.snake(this.secondTableName) + '_model';
-        return ChangeCase[naming.defaults.caseType](name);
-    }
-
-    public firstTableNameCamel() : string {
-        return toCamelCase(this.firstTableName);
-    }
-
-    public secondTableNameCamel() : string {
-        return toCamelCase(this.secondTableName);
-    }
-
-}
-
-// Associations are named foreign keys, like OwnerUserID
-class Association implements api.IAssociation {
-    constructor(public associationName : string) {
-    }
-}
 
 interface ColumnDefinitionRow {
     table_name : string;
@@ -535,7 +55,7 @@ export function read(database : string, username : string, password : string, op
 
     var schema : Schema;
     var sequelize : sequelize.Sequelize = new Sequelize(database, username, password, options);
-    var tableLookup : api.IDictionary<Table> = {};
+    var tableLookup : api.IDictionary<api.ITable> = {};
     var xrefs : api.IDictionary<Xref> = {};
     var associationsFound : api.IDictionary<boolean> = {};
     var customReferenceRows : ReferenceDefinitionRow[] = [];
@@ -709,9 +229,9 @@ export function read(database : string, username : string, password : string, op
     function processTablesAndColumnsWithCustom(rows : ColumnDefinitionRow[], customFieldLookup : api.IDictionary<ColumnDefinitionRow>) : void {
 
         var tables : Array<Table> = [];
-        schema = new Schema(tables);
+        schema = new Schema(tables, naming);
 
-        var table : Table = new Table(schema, "");
+        var table : Table = new Table(schema, "", naming);
 
         var calculatedFieldsFound : _.Dictionary<boolean> = {};
 
@@ -723,13 +243,22 @@ export function read(database : string, username : string, password : string, op
             }
 
             if (row.table_name != table.tableName) {
-                table = new Table(schema, row.table_name);
+                table = new Table(schema, row.table_name, naming);
                 tables.push(table);
             }
 
             var isCalculated : boolean = customFieldLookup[row.column_name] !== undefined;
 
-            var field : Field = new Field(row.column_name, row.data_type, row.column_type, row.column_default, row.is_nullable, table, false, isCalculated);
+            var field: Field = new Field(
+                row.column_name,
+                row.data_type,
+                row.column_type,
+                row.column_default,
+                row.is_nullable,
+                table,
+                naming,
+                false,
+                isCalculated);
             table.fields.push(field);
             table.columns.push(field);
 
@@ -931,6 +460,7 @@ export function read(database : string, username : string, password : string, op
                     undefined,
                     undefined,
                     childTable,
+                    naming,
                     true);
                 childTable.fields.push(field);
                 childTable.refs.push(field);
@@ -941,10 +471,11 @@ export function read(database : string, username : string, password : string, op
                 row.referenced_table_name,
                 row.table_name,
                 associationName,
-                util.camelCase(Sequelize.Utils.singularize(row.referenced_table_name)) + toTitleCase(Schema.idSuffix),
+                util.camelCase(Sequelize.Utils.singularize(row.referenced_table_name)) + util.toTitleCase(Schema.idSuffix),
                 row.column_name,
                 false,
-                schema));
+                schema,
+                naming));
         }
 
         function processReferenceXrefRow(row : ReferenceDefinitionRow) : void {
@@ -956,7 +487,8 @@ export function read(database : string, username : string, password : string, op
                     row.referenced_column_name,
                     null,
                     null,
-                    row.table_name);
+                    row.table_name,
+                    naming);
             } else {
                 xref.secondTableName = row.referenced_table_name;
                 xref.secondFieldName = row.referenced_column_name;
@@ -974,8 +506,8 @@ export function read(database : string, username : string, password : string, op
 
                 schema.xrefs.push(xref);
 
-                var firstTable : Table = tableLookup[xref.firstTableName];
-                var secondTable : Table = tableLookup[xref.secondTableName];
+                var firstTable : api.ITable = tableLookup[xref.firstTableName];
+                var secondTable : api.ITable = tableLookup[xref.secondTableName];
 
                 var field = new Field(
                     util.camelCase(xref.secondTableName),
@@ -984,6 +516,7 @@ export function read(database : string, username : string, password : string, op
                     undefined,
                     undefined,
                     firstTable,
+                    naming,
                     true);
 
                 firstTable.fields.push(field);
@@ -996,6 +529,7 @@ export function read(database : string, username : string, password : string, op
                     undefined,
                     undefined,
                     secondTable,
+                    naming,
                     true);
 
                 secondTable.fields.push(field);
@@ -1087,7 +621,7 @@ export function read(database : string, username : string, password : string, op
                     break;
             }
 
-            var otherTable : Table = tableLookup[otherTableName];
+            var otherTable : api.ITable = tableLookup[otherTableName];
             if (otherTable === undefined) {
                 console.log('Unable to find related table for view ' + view.tableName + '.' + field.fieldName + ', expected ' + otherTableName + '.');
                 return;
@@ -1099,7 +633,8 @@ export function read(database : string, username : string, password : string, op
                 field.fieldName,
                 field.fieldName,
                 true,
-                schema);
+                schema,
+            	naming);
 
             schema.references.push(reference);
 
@@ -1112,6 +647,7 @@ export function read(database : string, username : string, password : string, op
                 undefined,
                 undefined,
                 view,
+                naming,
                 true);
             view.fields.push(field);
             view.refs.push(field);
@@ -1123,6 +659,7 @@ export function read(database : string, username : string, password : string, op
                 undefined,
                 undefined,
                 otherTable,
+                naming,
                 true);
             otherTable.fields.push(field);
             otherTable.refs.push(field);
@@ -1142,7 +679,7 @@ export function read(database : string, username : string, password : string, op
         var idSuffixLen : number = idSuffix.length;
 
         for (var tableIndex : number = 0; tableIndex < schema.tables.length; tableIndex++) {
-            var table : Table = schema.tables[tableIndex];
+            var table : api.ITable = schema.tables[tableIndex];
 
             if (table == null || table.fields == null || table.fields.length === 0) {
                 continue;
@@ -1171,7 +708,7 @@ export function read(database : string, username : string, password : string, op
         var idSuffixLen : number = idSuffix.length;
 
         for (var tableIndex : number = 0; tableIndex < schema.tables.length; tableIndex++) {
-            var table : Table = schema.tables[tableIndex];
+            var table : api.ITable = schema.tables[tableIndex];
 
             if (table == null || table.fields == null || table.fields.length < 2) {
                 continue;
@@ -1202,12 +739,4 @@ export function read(database : string, username : string, password : string, op
             }
         }
     }
-}
-
-function toTitleCase(text : string) : string {
-    return text.charAt(0).toUpperCase() + text.substr(1, text.length - 1);
-}
-
-function toCamelCase(text : string) : string {
-    return text.charAt(0).toLowerCase() + text.substr(1);
 }
