@@ -300,7 +300,8 @@ export function read(database : string, username : string, password : string, op
                     "ON ccu.constraint_name = tc.constraint_name " +
                     "WHERE " +
                     "constraint_type = 'FOREIGN KEY' and " +
-                    "kcu.constraint_catalog = '" + database + "' ";
+                    "kcu.constraint_catalog = '" + database + "' " +
+                    "GROUP BY tc.table_name,kcu.column_name,referenced_table_name,referenced_column_name";
                 break;
             default:
                 break;
